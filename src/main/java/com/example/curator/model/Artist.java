@@ -19,5 +19,6 @@ public class Artist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-
+    private String apiOrigin;
+    private int apiID;
 }
