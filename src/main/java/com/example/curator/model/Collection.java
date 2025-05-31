@@ -20,7 +20,7 @@ public class Collection {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private AppUser AppUser;
+    private AppUser appUser;
 
     private String title;
     private String description;
