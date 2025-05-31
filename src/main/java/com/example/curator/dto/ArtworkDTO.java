@@ -15,5 +15,6 @@ public class ArtworkDTO {
     private String description;
     private String altText;
     private String apiOrigin;
+    private String imageUrl;
     private ArtistDTO artist;
 }
