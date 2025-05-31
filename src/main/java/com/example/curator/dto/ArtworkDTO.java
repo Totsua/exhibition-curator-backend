@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class ArtworkDTO {
-    private int id;
+    private Long id;
     private String title;
     private String description;
     private String altText;

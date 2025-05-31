@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 public class Artwork {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private int apiId;
+    private Long id;
+    private Long apiId;
 
     private String title;
     private String description;

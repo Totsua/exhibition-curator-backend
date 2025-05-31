@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class ArtistDTO {
-    private String apiID;
+    private Long apiID;
     private String name;
 }
