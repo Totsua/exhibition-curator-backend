@@ -1,6 +1,8 @@
 package com.example.curator.service;
 
 
-public interface ApiService {
+import com.example.curator.model.ArtworkResults;
 
+public interface ApiService {
+    ArtworkResults getArtworkSearchResults(String query, Integer page);
 }
