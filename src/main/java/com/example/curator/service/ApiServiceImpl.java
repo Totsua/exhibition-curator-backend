@@ -6,6 +6,7 @@ import com.example.curator.dto.ArtworkDTO;
 import com.example.curator.model.ArtworkResults;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,6 +15,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 
+@Service
 public class ApiServiceImpl implements ApiService{
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final HttpClient client  = HttpClient.newBuilder().build();
@@ -98,7 +100,7 @@ public class ApiServiceImpl implements ApiService{
 
         art.setArtist(artist);
         art.setDescription(data.path("short_description").asText("There is no description for this artpiece"));
-        String imageUrl = rootNode.findPath("config").path("iiif_url").asText() + "/" + data.path("image_id") + "/full/843,/0/default.jpg";
+        String imageUrl = rootNode.findPath("config").path("iiif_url").asText() + "/" + data.path("image_id").asText() + "/full/843,/0/default.jpg";
         art.setImageUrl(imageUrl);
 
         return art;
