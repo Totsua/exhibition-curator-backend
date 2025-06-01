@@ -16,11 +16,11 @@ import java.util.List;
 public class Collection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private AppUser AppUser;
+    private AppUser appUser;
 
     private String title;
     private String description;

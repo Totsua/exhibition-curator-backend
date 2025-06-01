@@ -1,9 +1,7 @@
 package com.example.curator.service;
 
-import com.example.curator.model.Artwork;
-
-import java.util.List;
+import com.example.curator.model.ArtworkResults;
 
 public interface CuratorService {
-    List<Artwork> getArtworkSearchResults(String query);
+    ArtworkResults getArtworkSearchResults(String query, Integer page);
 }
