@@ -27,8 +27,8 @@ public class Exhibition {
 
     @ManyToMany
     @JoinTable(
-            name = "collection_art",
-            joinColumns = {@JoinColumn(name = "collection_id")},
+            name = "exhibition_art",
+            joinColumns = {@JoinColumn(name = "exhibition_id")},
             inverseJoinColumns = {@JoinColumn(name = "artwork_id")}
     )
     private List<Artwork> artworks;
