@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Data
-public class Collection {
+public class Exhibition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
