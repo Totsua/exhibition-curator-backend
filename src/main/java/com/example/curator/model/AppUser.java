@@ -19,7 +19,7 @@ public class AppUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String Uid;
+    private String uid;
 
 
 }

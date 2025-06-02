@@ -20,5 +20,5 @@ public class Artist {
     private Long id;
     private String name;
     private String apiOrigin;
-    private Long apiID;
+    private Long apiId;
 }
