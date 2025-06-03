@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CuratorServiceImpl implements CuratorService{
@@ -44,6 +45,14 @@ public class CuratorServiceImpl implements CuratorService{
         Exhibition exhibitionDTO = exhibitionRepository.save(exhibition);
         return exhibitionToDTOMapper(exhibitionDTO);
     }
+
+    @Override
+    public List<ExhibitionDTO> getAllExhibitions() {
+        List<Exhibition> exhibitionList = new ArrayList<>();
+        exhibitionRepository.findAll().forEach(exhibitionList::add);
+        return exhibitionList.stream().map(this::exhibitionToDTOMapper).toList();
+    }
+
 
     private ExhibitionDTO exhibitionToDTOMapper(Exhibition exhibition) {
         ArrayList<ArtworkDTO> artworks = new ArrayList<>();

@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 public class CuratorController {
@@ -28,6 +30,11 @@ public class CuratorController {
     @PostMapping("/exhibitions/create")
     public ResponseEntity<ExhibitionDTO> createExhibition(@RequestParam String title){
         return new ResponseEntity<>(service.createExhibition(title),HttpStatus.CREATED);
+    }
+    // Read all exhibitions (probably send id,title and description)
+    @GetMapping("/exhibitions")
+    public ResponseEntity<List<ExhibitionDTO>> getAllExhibitions(){
+        return new ResponseEntity<>(service.getAllExhibitions(),HttpStatus.OK);
     }
 
 }
