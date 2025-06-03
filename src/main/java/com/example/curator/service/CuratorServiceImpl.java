@@ -7,11 +7,13 @@ import com.example.curator.model.Artwork;
 import com.example.curator.model.ArtworkResults;
 import com.example.curator.model.Exhibition;
 import com.example.curator.repository.ExhibitionRepository;
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CuratorServiceImpl implements CuratorService{
@@ -22,6 +24,10 @@ public class CuratorServiceImpl implements CuratorService{
 
     @Override
     public ArtworkResults getArtworkSearchResults(String query, Integer page) {
+        if(page == null || page < 1){
+            // todo: if page is below one or null throw custom error
+        }
+
         ArtworkResults artworkSearchResults = apiService.getArtworkSearchResults(query,page);
         return artworkSearchResults;
     }
@@ -51,6 +57,38 @@ public class CuratorServiceImpl implements CuratorService{
         List<Exhibition> exhibitionList = new ArrayList<>();
         exhibitionRepository.findAll().forEach(exhibitionList::add);
         return exhibitionList.stream().map(this::exhibitionToDTOMapper).toList();
+    }
+
+    // Exhibition details that are updated should only be title and description
+    @Override
+    public ExhibitionDTO updateExhibitionDetails(Long id, ExhibitionDTO exhibitionDTOUpdate){
+        if(!exhibitionRepository.existsById(id)){
+            System.out.println("no exhibition with id: " + id);
+            //todo: throw custom 'no item found' exception
+
+        }
+        Optional<Exhibition> optionalExhibitionInDB = exhibitionRepository.findById(id);
+        Exhibition exhibitionInDB = optionalExhibitionInDB.get();
+        if(!StringUtils.isBlank(exhibitionDTOUpdate.getTitle())){
+            exhibitionInDB.setTitle(exhibitionDTOUpdate.getTitle());
+        }
+        if(exhibitionDTOUpdate.getDescription() != null){
+            exhibitionInDB.setDescription(exhibitionDTOUpdate.getDescription());
+        }
+
+        return exhibitionToDTOMapper(exhibitionRepository.save(exhibitionInDB));
+    }
+
+
+    @Override
+    public void deleteExhibition(Long id) {
+        if(exhibitionRepository.existsById(id)) {
+            exhibitionRepository.deleteById(id);
+        }
+        else {
+            System.out.println("no entry with that id");
+            //todo: throw custom no item with that id exception
+        }
     }
 
 

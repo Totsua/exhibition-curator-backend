@@ -11,4 +11,6 @@ public interface CuratorService {
     ArtworkDTO getApiArtworkDetails(Long id, String apiOrigin);
     ExhibitionDTO createExhibition(String title);
     List<ExhibitionDTO> getAllExhibitions();
+    ExhibitionDTO updateExhibitionDetails(Long id, ExhibitionDTO exhibitionDTO);
+    void deleteExhibition(Long id);
 }
