@@ -34,6 +34,19 @@ public class ApiServiceImpl implements ApiService{
         return new ArtworkResults(query,page,allArtworkResults);
     }
 
+    @Override
+    public ArtworkDTO getApiArtworkDetails(Long id, String apiOrigin){
+        ArtworkDTO artwork = new ArtworkDTO();
+        switch(apiOrigin){
+            case "Chicago Institute":
+                artwork = getChiArtById(id.toString());
+            default:
+                // todo: throw custom exception for artwork
+        }
+
+        return artwork;
+    }
+
     private ArrayList<ArtworkDTO> getChiAPISearchResults(String query, Integer page){
         ArrayList<ArtworkDTO> artworkResults = new ArrayList<>();
         String searchUrl = String.format("%s?q=%s&page=%d&limit=10", CHICAGO_ARTWORK_SEARCH_URL, query, page);
