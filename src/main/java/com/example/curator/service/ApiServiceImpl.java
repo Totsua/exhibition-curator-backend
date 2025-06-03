@@ -106,13 +106,14 @@ public class ApiServiceImpl implements ApiService{
 
 
         ArtistDTO artist = ArtistDTO.builder()
-                .apiID(data.path("artist_ids").get(0).asLong(0))
+                .apiID(data.path("artist_id").asLong(0))
                 .name(data.path("artist_title").asText("Unknown"))
                 .build();
 
 
         art.setArtist(artist);
         art.setDescription(data.path("short_description").asText("There is no description for this artpiece"));
+        //todo: check for imageURL to see if empty
         String imageUrl = rootNode.findPath("config").path("iiif_url").asText() + "/" + data.path("image_id").asText() + "/full/843,/0/default.jpg";
         art.setImageUrl(imageUrl);
 
