@@ -22,7 +22,9 @@ public class Exhibition {
 //    @JoinColumn(name = "user_id")
 //    private AppUser appUser;
 
+    @Column(unique = true)
     private String title;
+
     private String description;
 
     @ManyToMany
