@@ -56,7 +56,7 @@ public class CuratorServiceImpl implements CuratorService{
         }
 
 
-        Exhibition exhibition = Exhibition.builder().title(title).build();
+        Exhibition exhibition = Exhibition.builder().title(title).description("").artworks(new ArrayList<>()).build();
         Exhibition exhibitionDTO = exhibitionRepository.save(exhibition);
         return exhibitionToDTOMapper(exhibitionDTO);
     }
