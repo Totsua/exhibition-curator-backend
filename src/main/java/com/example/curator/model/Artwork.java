@@ -28,7 +28,7 @@ public class Artwork {
     private String altText;
 
     @JoinColumn(name = "artist_id")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Artist artist;
 
     private String imageUrl;
