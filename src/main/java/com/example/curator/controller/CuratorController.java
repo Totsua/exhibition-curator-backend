@@ -2,8 +2,10 @@ package com.example.curator.controller;
 
 import com.example.curator.dto.ArtworkDTO;
 import com.example.curator.dto.ExhibitionDTO;
+import com.example.curator.dto.ApiArtworkIdDTO;
 import com.example.curator.model.ArtworkResults;
 import com.example.curator.service.CuratorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +48,17 @@ public class CuratorController {
     public ResponseEntity<ExhibitionDTO> deleteExhibition(@PathVariable Long id){
         service.deleteExhibition(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // Save artwork to exhibition
+    @PostMapping("/exhibitions/{id}/artworks")
+    public ResponseEntity<ExhibitionDTO> saveExhibitionArt(@PathVariable Long id, @RequestBody @Valid ApiArtworkIdDTO artworkDTO){
+        return new ResponseEntity<>(service.saveExhibitionArt(id, artworkDTO),HttpStatus.CREATED);
+    }
+    // Delete artwork from exhibition
+    @DeleteMapping("/exhibitions/{exhibitionId}/artworks")
+    public ResponseEntity<ExhibitionDTO> deleteExhibitionArt(@PathVariable Long exhibitionId, @RequestBody @Valid ApiArtworkIdDTO artworkDTO){
+        return new ResponseEntity<>(service.deleteExhibitionArt(exhibitionId,artworkDTO),HttpStatus.OK);
     }
 
 }

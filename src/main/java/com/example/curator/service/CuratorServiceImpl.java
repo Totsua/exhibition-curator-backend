@@ -1,5 +1,6 @@
 package com.example.curator.service;
 
+import com.example.curator.dto.ApiArtworkIdDTO;
 import com.example.curator.dto.ArtistDTO;
 import com.example.curator.dto.ArtworkDTO;
 import com.example.curator.dto.ExhibitionDTO;
@@ -7,6 +8,8 @@ import com.example.curator.model.Artist;
 import com.example.curator.model.Artwork;
 import com.example.curator.model.ArtworkResults;
 import com.example.curator.model.Exhibition;
+import com.example.curator.repository.ArtistRepository;
+import com.example.curator.repository.ArtworkRepository;
 import com.example.curator.repository.ExhibitionRepository;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,10 @@ public class CuratorServiceImpl implements CuratorService{
     ApiService apiService;
     @Autowired
     ExhibitionRepository exhibitionRepository;
+    @Autowired
+    ArtworkRepository artworkRepository;
+    @Autowired
+    ArtistRepository artistRepository;
 
     @Override
     public ArtworkResults getArtworkSearchResults(String query, Integer page) {
@@ -93,6 +100,80 @@ public class CuratorServiceImpl implements CuratorService{
         }
     }
 
+
+
+    // todo: optimise repository calls ( do the find as an optional object then do .isPresent() as the if check)
+    //  don't save artwork first, do artist checks first
+    //  check if the artwork is already in the exhibition, if so throw an exception
+    @Override
+    public ExhibitionDTO saveExhibitionArt(Long id, ApiArtworkIdDTO artworkDTO) {
+        if(!exhibitionRepository.existsById(id)){
+            // todo: throw custom 'no exhibition with that id' exception
+        }
+        Exhibition exhibitionInDB = exhibitionRepository.findById(id).get();
+        ArtworkDTO artworkApi = apiService.getApiArtworkDetails(artworkDTO.getArtId(), artworkDTO.getApiOrigin());
+        Artwork artwork = new Artwork();
+        Artist artist = new Artist();
+
+        if(artistRepository.existsByApiIdAndApiOrigin(artworkApi.getArtist().getApiID(),artworkApi.getApiOrigin())){
+            artist = artistRepository.findByApiIdAndApiOrigin(artworkApi.getArtist().getApiID(),artworkApi.getApiOrigin()).get();
+        }
+        else {
+             artist = Artist.builder()
+                    .name(artworkApi.getArtist().getName())
+                    .apiOrigin(artworkApi.getApiOrigin())
+                    .apiId(artworkApi.getArtist().getApiID())
+                    .build();
+             artist = artistRepository.save(artist);
+        }
+
+
+        if(artworkRepository.existsByApiIdAndApiOrigin(artworkApi.getId(), artworkApi.getApiOrigin())){
+            artwork = artworkRepository.findByApiIdAndApiOrigin(artworkApi.getId(),artworkApi.getApiOrigin()).get();
+        }else{
+            artwork = dtoToArtwork(artworkApi);
+            artwork.setArtist(artist);
+            artwork = artworkRepository.save(artwork);
+        }
+
+        if(exhibitionInDB.getArtworks().contains(artwork)){
+            // todo: throw 'artwork already in exhibition' error
+        }
+
+        ArrayList<Artwork> artworkArrayList = new ArrayList<>(exhibitionInDB.getArtworks());
+
+        artworkArrayList.add(artwork);
+        exhibitionInDB.setArtworks(artworkArrayList);
+
+        return exhibitionToDTOMapper(exhibitionRepository.save(exhibitionInDB));
+    }
+
+
+
+
+    @Override
+    public ExhibitionDTO deleteExhibitionArt(Long exhibitionId, ApiArtworkIdDTO artworkDTO) {
+        if(!exhibitionRepository.existsById(exhibitionId)){
+            // todo: throw custom 'no exhibition with that id' exception
+        }
+        Exhibition exhibitionInDB = exhibitionRepository.findById(exhibitionId).get();
+        Optional<Artwork> optionalArtwork = artworkRepository.findByApiIdAndApiOrigin(artworkDTO.getArtId(), artworkDTO.getApiOrigin());
+        if(optionalArtwork.isEmpty()){
+            // todo: throw 'artwork not saved on database' error
+        }
+        Artwork artwork = optionalArtwork.get();
+
+        if(!exhibitionInDB.getArtworks().contains(artwork)){
+            // todo: throw 'artwork not in exhibition' error
+        }
+
+        ArrayList<Artwork> artworkArrayList = new ArrayList<>(exhibitionInDB.getArtworks());
+
+        artworkArrayList.remove(artwork);
+        exhibitionInDB.setArtworks(artworkArrayList);
+        return exhibitionToDTOMapper(exhibitionRepository.save(exhibitionInDB));
+
+    }
 
     private ExhibitionDTO exhibitionToDTOMapper(Exhibition exhibition) {
         ArrayList<ArtworkDTO> artworks = new ArrayList<>();

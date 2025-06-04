@@ -2,7 +2,9 @@ package com.example.curator.service;
 
 import com.example.curator.dto.ArtworkDTO;
 import com.example.curator.dto.ExhibitionDTO;
+import com.example.curator.dto.ApiArtworkIdDTO;
 import com.example.curator.model.ArtworkResults;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -13,4 +15,6 @@ public interface CuratorService {
     List<ExhibitionDTO> getAllExhibitions();
     ExhibitionDTO updateExhibitionDetails(Long id, ExhibitionDTO exhibitionDTO);
     void deleteExhibition(Long id);
+    ExhibitionDTO saveExhibitionArt(Long id, @Valid ApiArtworkIdDTO artworkDTO);
+    ExhibitionDTO deleteExhibitionArt(Long exhibitionId, @Valid ApiArtworkIdDTO artworkDTO);
 }
