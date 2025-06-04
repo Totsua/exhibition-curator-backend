@@ -3,6 +3,7 @@ package com.example.curator.service;
 import com.example.curator.dto.ArtistDTO;
 import com.example.curator.dto.ArtworkDTO;
 import com.example.curator.dto.ExhibitionDTO;
+import com.example.curator.model.Artist;
 import com.example.curator.model.Artwork;
 import com.example.curator.model.ArtworkResults;
 import com.example.curator.model.Exhibition;
@@ -116,6 +117,23 @@ public class CuratorServiceImpl implements CuratorService{
                 .apiOrigin(artwork.getApiOrigin())
                 .imageUrl(artwork.getImageUrl())
                 .artist(new ArtistDTO(artwork.getArtist().getApiId(),artwork.getArtist().getName()))
+                .build();
+    }
+    private Artwork dtoToArtwork(ArtworkDTO artworkDTO){
+       Artist artist = Artist.builder()
+               .name(artworkDTO.getArtist().getName())
+               .apiOrigin(artworkDTO.getApiOrigin())
+               .apiId(artworkDTO.getArtist().getApiID())
+               .build();
+
+        return Artwork.builder()
+                .apiId(artworkDTO.getId())
+                .title(artworkDTO.getTitle())
+                .description(artworkDTO.getDescription())
+                .altText(artworkDTO.getAltText())
+                .artist(artist)
+                .imageUrl(artworkDTO.getImageUrl())
+                .apiOrigin(artworkDTO.getApiOrigin())
                 .build();
     }
 }
