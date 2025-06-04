@@ -23,8 +23,8 @@ public class CuratorController {
     }
 
     @GetMapping("/search/{id}")
-    public ResponseEntity<ArtworkDTO> getApiArtworkDetailsById(@PathVariable("id") Long id,@RequestParam("apiOrigin") String apiOrigin){
-        return new ResponseEntity<>(service.getApiArtworkDetails(id, apiOrigin),HttpStatus.OK);
+    public ResponseEntity<ArtworkDTO> getApiArtworkDetailsById(@RequestBody ApiArtworkIdDTO artworkDetails){
+        return new ResponseEntity<>(service.getApiArtworkDetails(artworkDetails),HttpStatus.OK);
     }
     // Create an exhibition
     @PostMapping("/exhibitions/create")
