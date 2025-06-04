@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 // Add a unique constraint to apiOrigin and apiId so only one "apiId" and "apiOrigin" combination can be on the db
-/*@Table(name = "artwork", uniqueConstraints = {
+@Table(name = "artwork", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"apiId", "apiOrigin"})
-})*/
+})
 public class Artwork {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,11 +22,13 @@ public class Artwork {
     private Long apiId;
 
     private String title;
+    @Lob
     private String description;
+    @Lob
     private String altText;
 
     @JoinColumn(name = "artist_id")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Artist artist;
 
     private String imageUrl;
