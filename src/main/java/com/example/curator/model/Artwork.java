@@ -22,7 +22,9 @@ public class Artwork {
     private Long apiId;
 
     private String title;
+    @Lob
     private String description;
+    @Lob
     private String altText;
 
     @JoinColumn(name = "artist_id")
