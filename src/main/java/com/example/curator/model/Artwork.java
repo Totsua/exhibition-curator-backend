@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 // Add a unique constraint to apiOrigin and apiId so only one "apiId" and "apiOrigin" combination can be on the db
-/*@Table(name = "artwork", uniqueConstraints = {
+@Table(name = "artwork", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"apiId", "apiOrigin"})
-})*/
+})
 public class Artwork {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
