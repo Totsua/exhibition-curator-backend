@@ -90,13 +90,11 @@ public class CuratorServiceImpl implements CuratorService{
 
     @Override
     public void deleteExhibition(Long id) {
-        if(exhibitionRepository.existsById(id)) {
+        Exhibition exhibition = exhibitionRepository.findById(id).orElseThrow(
+                () -> new InvalidExhibitionException("There are no Exhibitions with id: " + id)
+        );
             exhibitionRepository.deleteById(id);
-        }
-        else {
-            System.out.println("no entry with that id");
-            //todo: throw custom no item with that id exception
-        }
+
     }
 
 
