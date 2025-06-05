@@ -3,6 +3,7 @@ package com.example.curator.service;
 import com.example.curator.dto.*;
 import com.example.curator.exception.InvalidArtworkException;
 import com.example.curator.exception.InvalidExhibitionException;
+import com.example.curator.exception.InvalidRequestException;
 import com.example.curator.model.Artist;
 import com.example.curator.model.Artwork;
 import com.example.curator.model.ArtworkResults;
@@ -10,13 +11,11 @@ import com.example.curator.model.Exhibition;
 import com.example.curator.repository.ArtistRepository;
 import com.example.curator.repository.ArtworkRepository;
 import com.example.curator.repository.ExhibitionRepository;
-import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CuratorServiceImpl implements CuratorService{
@@ -49,13 +48,16 @@ public class CuratorServiceImpl implements CuratorService{
 
     @Override
     public ExhibitionDTO createExhibition(String title) {
-        if(exhibitionRepository.existsByTitle(title)){
-            System.out.println("Exhibition already exists with that title");
-            // todo: throw custom 'exhibition already exists' exception
+        if(exhibitionRepository.existsByTitle(title.trim())){
+            throw new InvalidExhibitionException(String.format("An exhibition with title: \"%s\" already exists",title.trim()));
         }
 
+        Exhibition exhibition = Exhibition.builder().
+                title(title.trim())
+                .description("")
+                .artworks(new ArrayList<>())
+                .build();
 
-        Exhibition exhibition = Exhibition.builder().title(title).description("").artworks(new ArrayList<>()).build();
         Exhibition exhibitionDTO = exhibitionRepository.save(exhibition);
         return exhibitionToDTOMapper(exhibitionDTO);
     }
