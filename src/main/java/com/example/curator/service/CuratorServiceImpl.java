@@ -101,7 +101,7 @@ public class CuratorServiceImpl implements CuratorService{
     @Override
     public void deleteExhibition(Long id) {
         Exhibition exhibition = exhibitionRepository.findById(id).orElseThrow(
-                () -> new InvalidExhibitionException("There are no Exhibitions with id: " + id)
+                () -> new InvalidExhibitionException("There is no Exhibition with id: " + id)
         );
             exhibitionRepository.deleteById(id);
 
@@ -144,7 +144,7 @@ public class CuratorServiceImpl implements CuratorService{
         }
 
         if(exhibitionInDB.getArtworks().contains(artwork)){
-            throw new InvalidExhibitionException(String.format("Artwork with <id: %s, apiOrigin: \"%s\"> is already in this exhibition"
+            throw new InvalidExhibitionException(String.format("Artwork with id: %s and apiOrigin: \"%s\" is already in this exhibition"
                     ,artwork.getApiId(),artwork.getApiOrigin()));
         }
 
@@ -166,14 +166,14 @@ public class CuratorServiceImpl implements CuratorService{
 
         Artwork artwork = artworkRepository.findByApiIdAndApiOrigin(artworkDTO.getArtId(), artworkDTO.getApiOrigin())
                 .orElseThrow(() -> new InvalidArtworkException(
-                        String.format("Artwork with <id: %s, apiOrigin: \"%s\"> does not exist in the database",
+                        String.format("Artwork with id: %s and apiOrigin: \"%s\" does not exist in the database",
                                 artworkDTO.getArtId(), artworkDTO.getApiOrigin()))
         );
 
 
         if(!exhibitionInDB.getArtworks().contains(artwork)){
             throw new InvalidExhibitionException(
-                    String.format("Artwork with <id: %s, apiOrigin: \"%s\"> does not exist in this exhibition"
+                    String.format("Artwork with id: %s and apiOrigin: \"%s\" does not exist in this exhibition"
                             ,artworkDTO.getArtId(),artworkDTO.getApiOrigin()));
         }
 
