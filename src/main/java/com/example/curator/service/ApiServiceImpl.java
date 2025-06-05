@@ -3,6 +3,9 @@ package com.example.curator.service;
 
 import com.example.curator.dto.ArtistDTO;
 import com.example.curator.dto.ArtworkDTO;
+import com.example.curator.exception.ErrorSendingGETRequestException;
+import com.example.curator.exception.InvalidArtworkException;
+import com.example.curator.exception.UnknownAPIOriginException;
 import com.example.curator.model.ArtworkResults;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,10 +43,16 @@ public class ApiServiceImpl implements ApiService{
         switch(apiOrigin){
             case "Chicago Institute":
                 artwork = getChiArtById(id.toString());
+                break;
             default:
-                // todo: throw custom exception for artwork
+                throw new UnknownAPIOriginException("Error: API Origin \""+ apiOrigin + "\" is unknown.");
         }
 
+        if(artwork.getId() == 0 || artwork.getArtist().getApiID() == 0){
+            // todo: throw 'no artwork' exception
+            throw new InvalidArtworkException(
+                    String.format("There are no artworks with id: %s and apiOrigin: \"%s\"",id,apiOrigin));
+        }
         return artwork;
     }
 
