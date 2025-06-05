@@ -69,19 +69,21 @@ public class CuratorServiceImpl implements CuratorService{
 
     // Exhibition details that are updated should only be title and description
     @Override
-    public ExhibitionDTO updateExhibitionDetails(Long id, ExhibitionDTO exhibitionDTOUpdate){
-        if(!exhibitionRepository.existsById(id)){
-            System.out.println("no exhibition with id: " + id);
-            //todo: throw custom 'no item found' exception
+    public ExhibitionDTO updateExhibitionDetails(Long id, ExhibitionPatchDTO exhibitionDTOUpdate){
 
+        Exhibition exhibitionInDB = exhibitionRepository.findById(id).orElseThrow(
+                () -> new InvalidExhibitionException("There are no Exhibitions with id: " + id)
+        );
+
+        if(exhibitionDTOUpdate.getTitle() != null && exhibitionDTOUpdate.getTitle().isBlank()){
+            if(exhibitionDTOUpdate.getTitle().trim().isBlank()){
+                throw new InvalidRequestException("Title must not be empty");
+            }
+            exhibitionInDB.setTitle(exhibitionDTOUpdate.getTitle().trim());
         }
-        Optional<Exhibition> optionalExhibitionInDB = exhibitionRepository.findById(id);
-        Exhibition exhibitionInDB = optionalExhibitionInDB.get();
-        if(!StringUtils.isBlank(exhibitionDTOUpdate.getTitle())){
-            exhibitionInDB.setTitle(exhibitionDTOUpdate.getTitle());
-        }
+
         if(exhibitionDTOUpdate.getDescription() != null){
-            exhibitionInDB.setDescription(exhibitionDTOUpdate.getDescription());
+            exhibitionInDB.setDescription(exhibitionDTOUpdate.getDescription().trim());
         }
 
         return exhibitionToDTOMapper(exhibitionRepository.save(exhibitionInDB));
