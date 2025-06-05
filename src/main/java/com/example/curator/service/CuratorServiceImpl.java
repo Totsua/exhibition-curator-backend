@@ -41,10 +41,7 @@ public class CuratorServiceImpl implements CuratorService{
 
     @Override
     public ArtworkDTO getApiArtworkDetails(ApiArtworkIdDTO apiArtworkIdDTO) {
-
-        ArtworkDTO artwork = apiService.getApiArtworkDetails(apiArtworkIdDTO.getArtId(), apiArtworkIdDTO.getApiOrigin());
-        // todo: catch custom artwork exception
-        return artwork;
+        return apiService.getApiArtworkDetails(apiArtworkIdDTO.getArtId(), apiArtworkIdDTO.getApiOrigin());
     }
 
     @Override
