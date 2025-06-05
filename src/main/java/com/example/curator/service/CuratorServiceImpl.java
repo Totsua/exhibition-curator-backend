@@ -70,6 +70,14 @@ public class CuratorServiceImpl implements CuratorService{
         return exhibitionList.stream().map(this::exhibitionToDTOMapper).toList();
     }
 
+    @Override
+    public ExhibitionDTO getExhibitionDetails(Long id){
+        Exhibition exhibition = exhibitionRepository.findById(id).orElseThrow(
+                () -> new InvalidExhibitionException("There are no Exhibitions with id: " + id));
+
+        return exhibitionToDTOMapper(exhibition);
+    }
+
     // Exhibition details that are updated should only be title and description
     @Override
     public ExhibitionDTO updateExhibitionDetails(Long id, ExhibitionPatchDTO exhibitionDTOUpdate){

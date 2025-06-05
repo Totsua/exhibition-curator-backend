@@ -37,6 +37,11 @@ public class CuratorController {
     public ResponseEntity<List<ExhibitionDTO>> getAllExhibitions(){
         return new ResponseEntity<>(service.getAllExhibitions(),HttpStatus.OK);
     }
+    @GetMapping("/exhibitions/{id}")
+    public ResponseEntity<ExhibitionDTO> getExhibitionDetails(@PathVariable Long id){
+        return new ResponseEntity<>(service.getExhibitionDetails(id),HttpStatus.OK);
+    }
+
     // Update an exhibition
     @PatchMapping("/exhibitions/{id}")
     public ResponseEntity<ExhibitionDTO> updateExhibitionDetails(@PathVariable Long id, @RequestBody @Validated ExhibitionPatchDTO exhibition){
