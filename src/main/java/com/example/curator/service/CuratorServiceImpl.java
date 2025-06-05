@@ -83,7 +83,7 @@ public class CuratorServiceImpl implements CuratorService{
                 () -> new InvalidExhibitionException("There are no Exhibitions with id: " + id)
         );
 
-        if(exhibitionDTOUpdate.getTitle() != null && exhibitionDTOUpdate.getTitle().isBlank()){
+        if(exhibitionDTOUpdate.getTitle() != null){
             if(exhibitionDTOUpdate.getTitle().trim().isBlank()){
                 throw new InvalidRequestException("Title must not be empty");
             }
