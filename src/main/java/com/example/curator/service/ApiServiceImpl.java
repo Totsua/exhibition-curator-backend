@@ -93,7 +93,8 @@ public class ApiServiceImpl implements ApiService{
             return mapper.readTree(response.body());
         } catch (IOException | InterruptedException e) {
             // Todo 28/05/25: Make new exception that is thrown to show trouble getting api data
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            throw new ErrorSendingGETRequestException("Server Error: Unable To Read External GET Response");
         }
 
     }
