@@ -1,14 +1,13 @@
 package com.example.curator.controller;
 
-import com.example.curator.dto.ArtworkDTO;
-import com.example.curator.dto.ExhibitionDTO;
-import com.example.curator.dto.ApiArtworkIdDTO;
+import com.example.curator.dto.*;
 import com.example.curator.model.ArtworkResults;
 import com.example.curator.service.CuratorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,7 +39,7 @@ public class CuratorController {
     }
     // Update an exhibition
     @PatchMapping("/exhibitions/{id}")
-    public ResponseEntity<ExhibitionDTO> updateExhibitionDetails(@PathVariable Long id, @RequestBody ExhibitionDTO exhibition){
+    public ResponseEntity<ExhibitionDTO> updateExhibitionDetails(@PathVariable Long id, @RequestBody @Validated ExhibitionPatchDTO exhibition){
         return new ResponseEntity<>(service.updateExhibitionDetails(id,exhibition), HttpStatus.OK);
     }
     // Delete an exhibition
