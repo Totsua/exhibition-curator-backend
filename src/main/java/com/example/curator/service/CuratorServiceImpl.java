@@ -106,10 +106,10 @@ public class CuratorServiceImpl implements CuratorService{
     //  check if the artwork is already in the exhibition, if so throw an exception
     @Override
     public ExhibitionDTO saveExhibitionArt(Long id, ApiArtworkIdDTO artworkDTO) {
-        if(!exhibitionRepository.existsById(id)){
-            // todo: throw custom 'no exhibition with that id' exception
-        }
-        Exhibition exhibitionInDB = exhibitionRepository.findById(id).get();
+
+        Exhibition exhibitionInDB = exhibitionRepository.findById(id)
+                .orElseThrow(() -> new InvalidExhibitionException("There are no Exhibitions with id: " + id));
+
         ArtworkDTO artworkApi = apiService.getApiArtworkDetails(artworkDTO.getArtId(), artworkDTO.getApiOrigin());
         Artwork artwork = new Artwork();
         Artist artist = new Artist();
@@ -136,7 +136,8 @@ public class CuratorServiceImpl implements CuratorService{
         }
 
         if(exhibitionInDB.getArtworks().contains(artwork)){
-            // todo: throw 'artwork already in exhibition' error
+            throw new InvalidExhibitionException(String.format("Artwork with <id: %s, apiOrigin: \"%s\"> is already in this exhibition"
+                    ,artwork.getApiId(),artwork.getApiOrigin()));
         }
 
         ArrayList<Artwork> artworkArrayList = new ArrayList<>(exhibitionInDB.getArtworks());
