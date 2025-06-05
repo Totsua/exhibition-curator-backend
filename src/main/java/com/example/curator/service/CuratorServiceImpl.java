@@ -30,8 +30,9 @@ public class CuratorServiceImpl implements CuratorService{
 
     @Override
     public ArtworkResults getArtworkSearchResults(String query, Integer page) {
+        // todo: check page is equal to or lower than it can be on API pagination
         if(page == null || page < 1){
-            // todo: if page is below one or null throw custom error
+            throw new InvalidRequestException("page must be greater or equal to 1.");
         }
 
         ArtworkResults artworkSearchResults = apiService.getArtworkSearchResults(query,page);
