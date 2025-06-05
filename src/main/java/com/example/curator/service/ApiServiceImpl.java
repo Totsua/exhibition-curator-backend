@@ -66,7 +66,9 @@ public class ApiServiceImpl implements ApiService{
         // Check to see if total is more than 0, if not then don't check the data
         int total = chiSearchRoot.path("pagination").path("total").asInt();
 
-        if(total > 0){
+        if(total <= 0) {
+            return artworkResults;
+        }
             JsonNode chiArtResults = chiSearchRoot.findPath("data");
             for(JsonNode node : chiArtResults){
                 String artId = node.path("id").asText();
@@ -78,7 +80,7 @@ public class ApiServiceImpl implements ApiService{
                 }
 
             }
-        }
+
 
         return artworkResults;
     }
