@@ -1,9 +1,8 @@
 package com.example.curator.service;
 
-import com.example.curator.dto.ApiArtworkIdDTO;
-import com.example.curator.dto.ArtistDTO;
-import com.example.curator.dto.ArtworkDTO;
-import com.example.curator.dto.ExhibitionDTO;
+import com.example.curator.dto.*;
+import com.example.curator.exception.InvalidArtworkException;
+import com.example.curator.exception.InvalidExhibitionException;
 import com.example.curator.model.Artist;
 import com.example.curator.model.Artwork;
 import com.example.curator.model.ArtworkResults;
@@ -155,16 +154,25 @@ public class CuratorServiceImpl implements CuratorService{
     public ExhibitionDTO deleteExhibitionArt(Long exhibitionId, ApiArtworkIdDTO artworkDTO) {
         if(!exhibitionRepository.existsById(exhibitionId)){
             // todo: throw custom 'no exhibition with that id' exception
+            throw new InvalidExhibitionException("There are no Exhibitions with id: " + exhibitionId);
         }
         Exhibition exhibitionInDB = exhibitionRepository.findById(exhibitionId).get();
         Optional<Artwork> optionalArtwork = artworkRepository.findByApiIdAndApiOrigin(artworkDTO.getArtId(), artworkDTO.getApiOrigin());
+
         if(optionalArtwork.isEmpty()){
             // todo: throw 'artwork not saved on database' error
+            throw new InvalidArtworkException(
+                    String.format("Artwork with <id: %s, apiOrigin: \"%s\"> does not exist in the database",
+                            artworkDTO.getArtId(), artworkDTO.getApiOrigin()));
         }
+
         Artwork artwork = optionalArtwork.get();
 
         if(!exhibitionInDB.getArtworks().contains(artwork)){
             // todo: throw 'artwork not in exhibition' error
+            throw new InvalidExhibitionException(
+                    String.format("Artwork with <id: %s, apiOrigin: \"%s\"> does not exist in this exhibition"
+                            ,artworkDTO.getArtId(),artworkDTO.getApiOrigin()));
         }
 
         ArrayList<Artwork> artworkArrayList = new ArrayList<>(exhibitionInDB.getArtworks());
