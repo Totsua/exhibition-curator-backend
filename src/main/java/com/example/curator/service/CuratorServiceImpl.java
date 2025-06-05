@@ -152,24 +152,17 @@ public class CuratorServiceImpl implements CuratorService{
 
     @Override
     public ExhibitionDTO deleteExhibitionArt(Long exhibitionId, ApiArtworkIdDTO artworkDTO) {
-        if(!exhibitionRepository.existsById(exhibitionId)){
-            // todo: throw custom 'no exhibition with that id' exception
-            throw new InvalidExhibitionException("There are no Exhibitions with id: " + exhibitionId);
-        }
-        Exhibition exhibitionInDB = exhibitionRepository.findById(exhibitionId).get();
-        Optional<Artwork> optionalArtwork = artworkRepository.findByApiIdAndApiOrigin(artworkDTO.getArtId(), artworkDTO.getApiOrigin());
+        Exhibition exhibitionInDB = exhibitionRepository.findById(exhibitionId).orElseThrow(() ->
+                new InvalidExhibitionException("There are no Exhibitions with id: " + exhibitionId));
 
-        if(optionalArtwork.isEmpty()){
-            // todo: throw 'artwork not saved on database' error
-            throw new InvalidArtworkException(
-                    String.format("Artwork with <id: %s, apiOrigin: \"%s\"> does not exist in the database",
-                            artworkDTO.getArtId(), artworkDTO.getApiOrigin()));
-        }
+        Artwork artwork = artworkRepository.findByApiIdAndApiOrigin(artworkDTO.getArtId(), artworkDTO.getApiOrigin())
+                .orElseThrow(() -> new InvalidArtworkException(
+                        String.format("Artwork with <id: %s, apiOrigin: \"%s\"> does not exist in the database",
+                                artworkDTO.getArtId(), artworkDTO.getApiOrigin()))
+        );
 
-        Artwork artwork = optionalArtwork.get();
 
         if(!exhibitionInDB.getArtworks().contains(artwork)){
-            // todo: throw 'artwork not in exhibition' error
             throw new InvalidExhibitionException(
                     String.format("Artwork with <id: %s, apiOrigin: \"%s\"> does not exist in this exhibition"
                             ,artworkDTO.getArtId(),artworkDTO.getApiOrigin()));
