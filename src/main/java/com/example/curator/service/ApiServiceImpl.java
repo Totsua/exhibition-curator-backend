@@ -73,7 +73,10 @@ public class ApiServiceImpl implements ApiService{
 
                 ArtworkDTO art = getChiArtById(artId);
 
-                artworkResults.add(art);
+                if(art.getId() != 0 && art.getArtist().getApiID() != 0){
+                    artworkResults.add(art);
+                }
+
             }
         }
 
