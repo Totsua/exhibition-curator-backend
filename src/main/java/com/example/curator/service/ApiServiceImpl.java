@@ -3,6 +3,7 @@ package com.example.curator.service;
 
 import com.example.curator.dto.ArtistDTO;
 import com.example.curator.dto.ArtworkDTO;
+import com.example.curator.exception.APIPageOutOfBoundsException;
 import com.example.curator.exception.ErrorSendingGETRequestException;
 import com.example.curator.exception.InvalidArtworkException;
 import com.example.curator.exception.UnknownAPIOriginException;
@@ -28,9 +29,23 @@ public class ApiServiceImpl implements ApiService{
 
     @Override
     public ArtworkResults getArtworkSearchResults(String query, Integer page) {
-        ArrayList<ArtworkDTO> chiArtworkResults = getChiAPISearchResults(query, page);
 
-        ArrayList<ArtworkDTO> allArtworkResults = new ArrayList<>(chiArtworkResults);
+        ArrayList<ArtworkDTO> allArtworkResults = new ArrayList<>();
+
+        int errorCount = 0;
+
+        try{
+            ArrayList<ArtworkDTO> chiArtworkResults = getChiAPISearchResults(query, page);
+            allArtworkResults.addAll(chiArtworkResults);
+        }catch (APIPageOutOfBoundsException e){
+            errorCount ++;
+        }
+
+        // error count should be equal to the number of apis
+        if(errorCount == 1){
+            throw new APIPageOutOfBoundsException(
+                    String.format("Page number: %s is out of bounds for query: \"%s\"",page,query));
+        }
 
         // todo: Add the Fitzwilliam API methods and place all into allArtworkResults
 
@@ -62,6 +77,10 @@ public class ApiServiceImpl implements ApiService{
 
         JsonNode chiSearchRoot = sendGetRequest(searchUrl);
 
+        int total_pages = chiSearchRoot.path("pagination").path("total_pages").asInt();
+        if(page > total_pages){
+            throw new APIPageOutOfBoundsException("Chicago Institute: Page Invalid");
+        }
 
         // Check to see if total is more than 0, if not then don't check the data
         int total = chiSearchRoot.path("pagination").path("total").asInt();
