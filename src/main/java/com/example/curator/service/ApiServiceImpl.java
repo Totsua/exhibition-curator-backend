@@ -116,7 +116,8 @@ public class ApiServiceImpl implements ApiService{
     private JsonNode sendGetRequest(String url){
         HttpRequest chiSearchRequest = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-//                .header("AIC-User-Agent: exhibition-curator (*Insert Email*)")
+//               todo for new user: add your email to the header
+//               .header("AIC-User-Agent","exhibition-curator (*Insert Email*)")
                 .GET()
                 .build();
 
