@@ -70,11 +70,6 @@ public class ApiServiceImpl implements ApiService{
             throw e;
         }
 
-        if(artwork.getId() == 0 || artwork.getArtist().getApiID() == 0){
-            // todo: throw 'no artwork' exception
-            throw new InvalidArtworkException(
-                    String.format("There are no artworks with id: %s and apiOrigin: \"%s\"",id,apiOrigin));
-        }
         return artwork;
     }
 
