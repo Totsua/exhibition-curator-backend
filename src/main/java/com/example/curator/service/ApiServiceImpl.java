@@ -55,12 +55,19 @@ public class ApiServiceImpl implements ApiService{
     @Override
     public ArtworkDTO getApiArtworkDetails(Long id, String apiOrigin){
         ArtworkDTO artwork = new ArtworkDTO();
-        switch(apiOrigin){
-            case "Chicago Institute":
-                artwork = getChiArtById(id.toString());
-                break;
-            default:
-                throw new UnknownAPIOriginException("Error: API Origin \""+ apiOrigin + "\" is unknown.");
+        try {
+            switch (apiOrigin) {
+                case "Chicago Institute":
+                    artwork = getChiArtById(id.toString());
+                    break;
+                /*case "Fitzwilliam":
+
+                    break;*/
+                default:
+                    throw new UnknownAPIOriginException("Error: API Origin \"" + apiOrigin + "\" is unknown.");
+            }
+        }catch (InvalidArtworkException e){
+            throw e;
         }
 
         if(artwork.getId() == 0 || artwork.getArtist().getApiID() == 0){
@@ -90,13 +97,19 @@ public class ApiServiceImpl implements ApiService{
         }
             JsonNode chiArtResults = chiSearchRoot.findPath("data");
             for(JsonNode node : chiArtResults){
+                // skip the node if it doesn't have id
+                if(!node.has("id")){
+                    continue;
+                }
+
                 String artId = node.path("id").asText();
 
-                ArtworkDTO art = getChiArtById(artId);
-
-                if(art.getId() != 0 && art.getArtist().getApiID() != 0){
-                    artworkResults.add(art);
-                }
+                try{
+                    ArtworkDTO art = getChiArtById(artId);
+                    if(art.getId() != 0 && art.getArtist().getApiID() != 0){
+                        artworkResults.add(art);
+                    }
+                }catch (InvalidArtworkException ignored){}
 
             }
 
@@ -128,6 +141,10 @@ public class ApiServiceImpl implements ApiService{
     private ArtworkDTO getChiArtById(String id){
         String url = CHICAGO_ARTWORK_SEARCH_URL + id;
         JsonNode rootNode = sendGetRequest(url);
+        if(rootNode.findPath("status").asText().equals("404")){
+            throw new InvalidArtworkException(
+                    String.format("There are no artworks with id: %s and apiOrigin: \"Chicago Institute\"",id));
+        }
 
         JsonNode data = rootNode.findPath("data");
 
