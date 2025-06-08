@@ -25,6 +25,7 @@ public class Exhibition {
     @Column(unique = true)
     private String title;
 
+    @Column(length = 500)
     private String description;
 
     @ManyToMany
