@@ -75,7 +75,8 @@ public class ApiServiceImpl implements ApiService{
 
     private ArrayList<ArtworkDTO> getChiAPISearchResults(String query, Integer page){
         ArrayList<ArtworkDTO> artworkResults = new ArrayList<>();
-        String searchUrl = String.format("%ssearch?q=%s&page=%d&limit=10", CHICAGO_ARTWORK_SEARCH_URL, query, page);
+        query = query.replace(" ","%20");
+        String searchUrl = CHICAGO_ARTWORK_SEARCH_URL + "search?q=" + query.trim() +"&page=" + page +"&limit=10";
 
         JsonNode chiSearchRoot = sendGetRequest(searchUrl);
 
