@@ -31,7 +31,7 @@ public class ApiServiceImpl implements ApiService{
     public ArtworkResults getArtworkSearchResults(String query, Integer page) {
 
         ArrayList<ArtworkDTO> allArtworkResults = new ArrayList<>();
-        int total_pages = 0;
+        int total_pages = 1;
         int errorCount = 0;
 
         try{
@@ -111,7 +111,7 @@ public class ApiServiceImpl implements ApiService{
 
             }
 
-            ArtworkDTO artworkDTO = ArtworkDTO.builder().id((long) total_pages).build();
+            ArtworkDTO artworkDTO = ArtworkDTO.builder().id((long) (Math.max(total_pages, 1))).build();
             artworkResults.add(artworkDTO);
 
         return artworkResults;
