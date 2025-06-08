@@ -16,4 +16,5 @@ public class ArtworkResults {
     private String query;
     private Integer page;
     private ArrayList<ArtworkDTO> artworks;
+    private Integer total_pages;
 }

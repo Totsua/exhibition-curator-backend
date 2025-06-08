@@ -31,11 +31,13 @@ public class ApiServiceImpl implements ApiService{
     public ArtworkResults getArtworkSearchResults(String query, Integer page) {
 
         ArrayList<ArtworkDTO> allArtworkResults = new ArrayList<>();
-
+        int total_pages = 0;
         int errorCount = 0;
 
         try{
             ArrayList<ArtworkDTO> chiArtworkResults = getChiAPISearchResults(query, page);
+            total_pages = chiArtworkResults.getLast().getId().intValue();
+            chiArtworkResults.removeLast();
             allArtworkResults.addAll(chiArtworkResults);
         }catch (APIPageOutOfBoundsException e){
             errorCount ++;
@@ -49,7 +51,7 @@ public class ApiServiceImpl implements ApiService{
 
         // todo: Add the Fitzwilliam API methods and place all into allArtworkResults
 
-        return new ArtworkResults(query,page,allArtworkResults);
+        return new ArtworkResults(query,page,allArtworkResults,total_pages); // add total_pages
     }
 
     @Override
@@ -109,6 +111,8 @@ public class ApiServiceImpl implements ApiService{
 
             }
 
+            ArtworkDTO artworkDTO = ArtworkDTO.builder().id((long) total_pages).build();
+            artworkResults.add(artworkDTO);
 
         return artworkResults;
     }
