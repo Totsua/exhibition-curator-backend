@@ -1,6 +1,7 @@
 package com.example.curator.service;
 
 import com.example.curator.dto.*;
+import com.example.curator.exception.DuplicateArtworkException;
 import com.example.curator.exception.InvalidArtworkException;
 import com.example.curator.exception.InvalidExhibitionException;
 import com.example.curator.exception.InvalidRequestException;
@@ -144,7 +145,7 @@ public class CuratorServiceImpl implements CuratorService{
         }
 
         if(exhibitionInDB.getArtworks().contains(artwork)){
-            throw new InvalidExhibitionException(String.format("Artwork with id: %s and apiOrigin: \"%s\" is already in this exhibition"
+            throw new DuplicateArtworkException(String.format("Artwork with id: %s and apiOrigin: \"%s\" is already in this exhibition"
                     ,artwork.getApiId(),artwork.getApiOrigin()));
         }
 
