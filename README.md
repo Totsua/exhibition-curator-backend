@@ -24,7 +24,7 @@ This  API allows users to explore artworks from public museum APIs and curate th
 - H2 Database
 
 # Frontend Technology
-For the Android frontend, please see: [repo](https://github.com/Totsua/Exhibition-Curator-Android-Frontend) 
+For the Android frontend, please see: [repo](https://github.com/Totsua/exhibition-curator-android) 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -60,7 +60,7 @@ Searches the 'Chicago Institute Of Art' API.
    - `page`:  Page number (integer)
 
 **Response Example**
-```json
+```jsonc
 {
    "query": "monet",
    "page": 1,
@@ -77,10 +77,7 @@ Searches the 'Chicago Institute Of Art' API.
             "name": "Claude Monet"
          }
       },
-     /*
-     ... 
-     rest of the results
-     */
+     // ...  rest of the results
       
    ],
    "total_pages": 32
@@ -90,7 +87,7 @@ Searches the 'Chicago Institute Of Art' API.
 ### `GET /search/{id}`
 Returns a detailed artwork from the 'Chicago Institute Of Art' API.
 - Requested Body:
-```json
+```jsonc
 {
    "artId": 129884,
    "apiOrigin":"Chicago Institute"
@@ -98,7 +95,7 @@ Returns a detailed artwork from the 'Chicago Institute Of Art' API.
   ```
 
 **Response Example**
-```json
+```jsonc
 {
    "id": 129884,
    "title": "Starry Night and the Astronauts",
@@ -119,13 +116,13 @@ Returns a detailed artwork from the 'Chicago Institute Of Art' API.
 Creates a new exhibition and returns it.
 
 **Request Body**
-```json
+```jsonc
 {
    "title": "Example 30"
 }
 ```
 **Response Example**
-```json
+```jsonc
 {
    "id": 1,
    "title": "Example 30",
@@ -138,17 +135,17 @@ Returns a list of all saved exhibitions
 
 **Response Example**
 
-```json
+```jsonc
 [
     {
         "id": 1,
         "title": "Example 30",
         "description": "",
         "artworks": [
-           /* Array of Artworks*/
+           // Array of Artworks
         ]
     }
-   ... rest of the exhibitions
+   // ... rest of the exhibitions
 ]
 ```
 ### `GET /exhibitions/{id}`
@@ -156,7 +153,7 @@ Returns a specified exhibition
 
 **Response Example**
 
-```json
+```jsonc
 [
     {
         "id": 1,
@@ -174,7 +171,7 @@ Updates exhibition metadata
 
 **Request Body**
 
-```json
+```jsonc
 {
    "title": "Updated Title",
    "description": "Updated Description (optional)"
@@ -183,14 +180,14 @@ Updates exhibition metadata
 
 **Response Example**
 
-```json
+```jsonc
 [
     {
         "id": 1,
         "title": "Updated Title",
         "description": "",
         "artworks": [
-           /* Array of Artworks*/
+           // Array of Artworks
         ]
     }
 ]
@@ -205,7 +202,7 @@ Deletes an exhibition.
 Adds an artwork to the specified exhibition.
 
 **Request Body**
-```json
+```jsonc
 {
    "artId": 12345,
    "apiOrigin": "Chicago Institute"
@@ -213,14 +210,14 @@ Adds an artwork to the specified exhibition.
 ```
 
 **Response Example**
-```json
+```jsonc
 [
     {
         "id": 1,
         "title": "Example 30",
         "description": "",
         "artworks": [
-           /* Array of Artworks*/
+           // Array of Artworks
         ]
     }
 ]
@@ -230,7 +227,7 @@ Adds an artwork to the specified exhibition.
 Removes an artwork from the specified exhibition.
 
 **Request Body**
-```json
+```jsonc
 {
    "artId": 12345,
    "apiOrigin": "Chicago Institute"
@@ -238,14 +235,14 @@ Removes an artwork from the specified exhibition.
 ```
 
 **Response Example**
-```json
+```jsonc
 [
     {
         "id": 1,
         "title": "Example 30",
         "description": "",
         "artworks": [
-           /* Array of Artworks*/
+            // Array of Artworks
         ]
     }
 ]
