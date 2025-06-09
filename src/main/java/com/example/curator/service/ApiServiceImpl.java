@@ -83,6 +83,7 @@ public class ApiServiceImpl implements ApiService{
         JsonNode chiSearchRoot = sendGetRequest(searchUrl);
 
         int total_pages = chiSearchRoot.path("pagination").path("total_pages").asInt();
+        total_pages = (Math.max(total_pages, 1));
         if(page > total_pages){
             throw new APIPageOutOfBoundsException("Chicago Institute: Page Invalid");
         }
@@ -111,7 +112,7 @@ public class ApiServiceImpl implements ApiService{
 
             }
 
-            ArtworkDTO artworkDTO = ArtworkDTO.builder().id((long) (Math.max(total_pages, 1))).build();
+            ArtworkDTO artworkDTO = ArtworkDTO.builder().id((long) total_pages ).build();
             artworkResults.add(artworkDTO);
 
         return artworkResults;
