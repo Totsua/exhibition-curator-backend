@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface CuratorService {
     ArtworkResults getArtworkSearchResults(String query, Integer page);
+    ArtworkDTO getRandomMetArtwork();
     ArtworkDTO getApiArtworkDetails(@Valid ApiArtworkIdDTO apiArtworkIdDTO);
     ExhibitionDTO createExhibition(String title);
     List<ExhibitionDTO> getAllExhibitions();
