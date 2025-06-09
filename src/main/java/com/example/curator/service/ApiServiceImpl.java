@@ -36,8 +36,11 @@ public class ApiServiceImpl implements ApiService{
 
         try{
             ArrayList<ArtworkDTO> chiArtworkResults = getChiAPISearchResults(query, page);
-            total_pages = chiArtworkResults.getLast().getId().intValue();
-            chiArtworkResults.removeLast();
+            if(!chiArtworkResults.isEmpty()){
+                total_pages = chiArtworkResults.getLast().getId().intValue();
+                chiArtworkResults.removeLast();
+            }
+
             allArtworkResults.addAll(chiArtworkResults);
         }catch (APIPageOutOfBoundsException e){
             errorCount ++;
