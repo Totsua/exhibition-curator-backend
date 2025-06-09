@@ -1,10 +1,7 @@
 package com.example.curator.service;
 
 import com.example.curator.dto.*;
-import com.example.curator.exception.DuplicateArtworkException;
-import com.example.curator.exception.InvalidArtworkException;
-import com.example.curator.exception.InvalidExhibitionException;
-import com.example.curator.exception.InvalidRequestException;
+import com.example.curator.exception.*;
 import com.example.curator.model.Artist;
 import com.example.curator.model.Artwork;
 import com.example.curator.model.ArtworkResults;
@@ -173,7 +170,7 @@ public class CuratorServiceImpl implements CuratorService{
 
 
         if(!exhibitionInDB.getArtworks().contains(artwork)){
-            throw new InvalidExhibitionException(
+            throw new ArtworkNotInExhibitionException(
                     String.format("Artwork with id: %s and apiOrigin: \"%s\" does not exist in this exhibition"
                             ,artworkDTO.getArtId(),artworkDTO.getApiOrigin()));
         }
