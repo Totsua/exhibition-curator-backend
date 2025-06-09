@@ -44,6 +44,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleDuplicateArtworkException(DuplicateArtworkException e){
         return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(ArtworkNotInExhibitionException.class)
+    public ResponseEntity<Object> handleArtworkNotInExhibitionException(ArtworkNotInExhibitionException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(final MethodArgumentNotValidException ex) {
