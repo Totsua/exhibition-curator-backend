@@ -38,6 +38,11 @@ public class CuratorServiceImpl implements CuratorService{
     }
 
     @Override
+    public ArtworkDTO getRandomMetArtwork(){
+        return apiService.getRandomMetArtwork();
+    }
+
+    @Override
     public ArtworkDTO getApiArtworkDetails(ApiArtworkIdDTO apiArtworkIdDTO) {
         return apiService.getApiArtworkDetails(apiArtworkIdDTO.getArtId(), apiArtworkIdDTO.getApiOrigin());
     }

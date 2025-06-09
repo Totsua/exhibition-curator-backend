@@ -18,6 +18,10 @@ public class CuratorController {
     @Autowired
     CuratorService service;
 
+    @GetMapping("/random")
+    public ResponseEntity<ArtworkDTO> getRandomMetArtwork(){
+        return new ResponseEntity<>(service.getRandomMetArtwork(), HttpStatus.OK);
+    }
     @GetMapping("/search")
     public ResponseEntity<ArtworkResults> getArtworkSearchResults(@RequestParam("query") String query, @RequestParam("page") Integer page){
     return new ResponseEntity<>(service.getArtworkSearchResults(query,page), HttpStatus.OK);

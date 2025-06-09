@@ -18,6 +18,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.Random;
 
 @Service
 public class ApiServiceImpl implements ApiService{
@@ -58,6 +59,74 @@ public class ApiServiceImpl implements ApiService{
     }
 
     @Override
+    public ArtworkDTO getRandomMetArtwork() {
+        ArtworkDTO artwork = null;
+
+        Random random = new Random();
+
+        int TOTAL_OBJECTS = 922041;
+
+        int maxAttempts = 20;
+        int attempts = 0;
+
+        while (attempts < maxAttempts) {
+            attempts++;
+            int randomObjectId = random.nextInt(TOTAL_OBJECTS) + 1;
+            String url = "https://collectionapi.metmuseum.org/public/collection/v1/objects/" + randomObjectId;
+
+            JsonNode result = sendGetRequest(url);
+
+            boolean hasMessage = result.has("message");
+
+
+            boolean hasValidConstituents = result.has("constituents") &&
+                    !result.get("constituents").isNull() &&
+                    result.get("constituents").isArray() &&
+                    !result.get("constituents").isEmpty();
+
+            if (!hasMessage && hasValidConstituents) {
+                JsonNode constituent = result.get("constituents").get(0);
+                long artistApiID = constituent.path("constituentID").asLong(0L);
+
+                if (artistApiID == 0L) {
+                    continue;
+                }
+
+                // We only want artworks with images
+                String imageUrl = result.path("primaryImage").asText("");
+                if (imageUrl.isEmpty()){
+                    continue;
+                }
+
+                ArtistDTO artist = ArtistDTO.builder()
+                        .name(constituent.path("name").asText("Unknown Artist"))
+                        .apiID(artistApiID)
+                        .build();
+
+                artwork = ArtworkDTO.builder()
+                        .id(result.path("objectID").asLong())
+                        .title(result.path("title").asText("Untitled Art"))
+                        .description("No Description Provided From The Metropolitan Museum")
+                        .imageUrl(imageUrl)
+                        .apiOrigin("The MET")
+                        .altText("Artwork from the MET: " + result.path("title").asText("Untitled Art"))
+                        .artist(artist)
+                        .build();
+
+                break;
+            }
+        }
+
+        if(attempts == maxAttempts){
+            throw new APIPageOutOfBoundsException("Max Attempts Tried");
+        }
+
+        return artwork;
+    }
+
+
+
+    @Override
     public ArtworkDTO getApiArtworkDetails(Long id, String apiOrigin){
         ArtworkDTO artwork = new ArtworkDTO();
         try {
@@ -68,6 +137,9 @@ public class ApiServiceImpl implements ApiService{
                 /*case "Fitzwilliam":
 
                     break;*/
+                 case "The MET":
+                     artwork = getMetArtById(id.toString());
+                     break;
                 default:
                     throw new UnknownAPIOriginException("Error: API Origin \"" + apiOrigin + "\" is unknown.");
             }
@@ -126,7 +198,7 @@ public class ApiServiceImpl implements ApiService{
         HttpRequest chiSearchRequest = HttpRequest.newBuilder()
                 .uri(URI.create(url))
 //               todo for new user: add your email to the header
-//               .header("AIC-User-Agent","exhibition-curator (*Insert Email*)")
+               .header("AIC-User-Agent","exhibition-curator (Shamar098@gmail.com)")
                 .GET()
                 .build();
 
@@ -174,6 +246,33 @@ public class ApiServiceImpl implements ApiService{
         art.setImageUrl(imageUrl);
 
         return art;
+    }
+
+    private ArtworkDTO getMetArtById(String id){
+        String url = "https://collectionapi.metmuseum.org/public/collection/v1/objects/" + id;
+        JsonNode result = sendGetRequest(url);
+        ArtworkDTO artwork;
+        JsonNode constituent = result.get("constituents").get(0);
+        long artistApiID = constituent.path("constituentID").asLong(0L);
+
+        String imageUrl = result.path("primaryImage").asText("");
+
+        ArtistDTO artist = ArtistDTO.builder()
+                .name(constituent.path("name").asText("Unknown Artist"))
+                .apiID(artistApiID)
+                .build();
+
+        artwork = ArtworkDTO.builder()
+                .id(result.path("objectID").asLong())
+                .title(result.path("title").asText("Untitled Art"))
+                .description("No Description Provided From The Metropolitan Museum")
+                .imageUrl(imageUrl)
+                .apiOrigin("The MET")
+                .altText("Artwork from the MET: " + result.path("title").asText("Untitled Art"))
+                .artist(artist)
+                .build();
+
+            return artwork;
     }
 
 }
