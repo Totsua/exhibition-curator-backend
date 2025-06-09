@@ -1,5 +1,4 @@
 # Exhibition Curator Backend API
-
 # About the project
 This  API allows users to explore artworks from public museum APIs and curate their own virtual exhibitions. Users can search for artworks, retrieve artwork details, and create, update, and manage exhibitions containing selected pieces.
 # Dependencies
@@ -26,7 +25,7 @@ This  API allows users to explore artworks from public museum APIs and curate th
 # Frontend Technology
 For the Android frontend, please see: [repo](https://github.com/Totsua/exhibition-curator-android) 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
 
 # API Overview
 ### Base Url: '/api/v1/exhibitioncurator'
@@ -109,7 +108,7 @@ Returns a detailed artwork from the 'Chicago Institute Of Art' API.
    }
 }
    ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
 
 ## Exhibitions Endpoints
 ### `POST /exhibitions/create`
@@ -195,7 +194,7 @@ Updates exhibition metadata
 ### `Delete /exhibitions/{id}`
 Deletes an exhibition.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
 
 ## Exhibition-Artwork Endpoints
 ### `POST /exhibitions/{id}/artworks`
@@ -247,7 +246,7 @@ Removes an artwork from the specified exhibition.
     }
 ]
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
 ## Object Summary
 ### `Artwork`
 Represents an artwork.
@@ -288,7 +287,7 @@ Represents an exhibition with its associated artworks.
    - `title`: Optional, if provided must be 1–80 characters.
    - `description`: Optional, max 500 characters.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
 
 
 
@@ -328,4 +327,4 @@ To get a local copy up and running follow these simple steps.
    git remote -v # confirm the changes
    ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
