@@ -2,7 +2,7 @@
 # About the project
 This  API allows users to explore artworks from public museum APIs and curate their own virtual exhibitions. Users can search for artworks, retrieve artwork details, and create, update, and manage exhibitions containing selected pieces.
 # Dependencies
-- Java - JDK 21  
+- Java - JDK 21
 
 - Spring Boot 3.5.0
 
@@ -23,12 +23,15 @@ This  API allows users to explore artworks from public museum APIs and curate th
 - H2 Database
 
 # Frontend Technology
-For the Android frontend, please see: [repo](https://github.com/Totsua/exhibition-curator-android) 
+For the Android frontend, please see: [repo](https://github.com/Totsua/exhibition-curator-android)
 
 <p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
 
 # API Overview
 ### Base Url: '/api/v1/exhibitioncurator'
+#### 
+- The server is hosted on 8080 by default unless changed.
+    - Therefore, a full url would be `localhost:8080/api/v1/exhibitioncurator/`
 ## Artwork Endpoints
 ### `GET /random`
 Returns a random artwork from the Metropolitan Museum of Art Collection API.
@@ -54,9 +57,9 @@ Searches for artworks with query and paginated page number.
 
 Searches the 'Chicago Institute Of Art' API.
 
-- Parameters:
-   - `query`: Search term (eg: "Monet")
-   - `page`:  Page number (integer)
+- Parameters required:
+    - `query`: Search term (eg: "Monet")
+    - `page`:  Page number (integer)
 
 **Response Example**
 ```jsonc
@@ -83,8 +86,8 @@ Searches the 'Chicago Institute Of Art' API.
 }
    ```
 
-### `GET /search/{id}`
-Returns a detailed artwork from the 'Chicago Institute Of Art' API.
+### `POST /search`
+Returns a detailed artwork.
 - Requested Body:
 ```jsonc
 {
@@ -247,45 +250,46 @@ Removes an artwork from the specified exhibition.
 ]
 ```
 <p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
+
 ## Object Summary
-### `Artwork`
+### `ArtworkDTO`
 Represents an artwork.
 
 | Field       | Type        | Description                    |
 |-------------|-------------|--------------------------------|
 | id          | Long        | Artwork ID                     |
 | title       | String      | Title of the artwork           |
-| description | String      | Artwork description (if any)   |
+| description | String      | Artwork description            |
 | altText     | String      | Alt text for accessibility     |
-| apiOrigin   | String      | Originating API (e.g., MET)    |
+| apiOrigin   | String      | Originating API (e.g: THE MET) |
 | imageUrl    | String      | Link to artwork image          |
 | artist      | ArtistDTO   | Artist information             |
 
 ### `Exhibition`
 Represents an exhibition with its associated artworks.
 
-| Field       | Type                | Description                      |
-|-------------|---------------------|----------------------------------|
-| id          | Long                | Exhibition ID                    |
-| title       | String              | Exhibition title                 |
-| description | String (optional)   | Description of the exhibition    |
-| artworks    | List<ArtworkDTO>    | List of artwork objects          |
+| Field       | Type              | Description                      |
+|-------------|-------------------|----------------------------------|
+| id          | Long              | Exhibition ID                    |
+| title       | String            | Exhibition title                 |
+| description | String (optional) | Description of the exhibition    |
+| artworks    | List (ArtworkDTO) | List of artwork objects          |
 
 
 ## Validation Rules
 
 - **ApiArtworkIdDTO**
-   - `artId`: Must not be null and must be greater than or equal to 0.
-   - `apiOrigin`: Required and must not be blank.
+    - `artId`: Must not be null and must be greater than or equal to 0.
+    - `apiOrigin`: Required and must not be blank.
 
 
-- **ExhibitionCreateDTO & ExhibitionDTO**
-   - `title`: Must be between 1 and 80 characters.
+- **ExhibitionCreateDTO**
+    - `title`: Must be between 1 and 80 characters.
 
 
 - **ExhibitionPatchDTO**
-   - `title`: Optional, if provided must be 1–80 characters.
-   - `description`: Optional, max 500 characters.
+    - `title`: Optional, if provided must be 1–80 characters.
+    - `description`: Optional, max 500 characters.
 
 <p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
 
