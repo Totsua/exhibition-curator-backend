@@ -27,8 +27,8 @@ public class CuratorController {
     return new ResponseEntity<>(service.getArtworkSearchResults(query,page), HttpStatus.OK);
     }
 
-    @GetMapping("/search/{id}")
-    public ResponseEntity<ArtworkDTO> getApiArtworkDetailsById(@RequestBody ApiArtworkIdDTO artworkDetails){
+    @PostMapping("/search")
+    public ResponseEntity<ArtworkDTO> getApiArtworkDetailsById(@RequestBody @Valid ApiArtworkIdDTO artworkDetails){
         return new ResponseEntity<>(service.getApiArtworkDetails(artworkDetails),HttpStatus.OK);
     }
     // Create an exhibition
