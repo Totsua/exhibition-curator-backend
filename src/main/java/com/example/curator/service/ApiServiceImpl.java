@@ -29,7 +29,7 @@ public class ApiServiceImpl implements ApiService{
     private static final HttpClient client  = HttpClient.newBuilder().build();
     private static final String CHICAGO_ARTWORK_SEARCH_URL = "https://api.artic.edu/api/v1/artworks/";
     private static final int PAGE_SIZE = 5;
-    private static final int MAX_RANDOM_ATTEMPTS = 20;
+    private static final int MAX_RANDOM_ATTEMPTS = 50;
     private static final int TOTAL_MET_OBJECTS = 922041;
 
 
