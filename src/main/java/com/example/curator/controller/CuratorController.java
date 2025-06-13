@@ -34,7 +34,7 @@ public class CuratorController {
     // Create an exhibition
     @PostMapping("/exhibitions/create")
     public ResponseEntity<ExhibitionDTO> createExhibition(@RequestBody @Valid ExhibitionCreateDTO exhibitionDTO){
-        return new ResponseEntity<>(service.createExhibition(exhibitionDTO.getTitle()),HttpStatus.CREATED);
+        return new ResponseEntity<>(service.createExhibition(exhibitionDTO),HttpStatus.CREATED);
     }
     // Read all exhibitions (probably send id,title and description)
     @GetMapping("/exhibitions")

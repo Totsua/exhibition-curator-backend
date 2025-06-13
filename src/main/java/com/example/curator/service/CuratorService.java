@@ -1,9 +1,6 @@
 package com.example.curator.service;
 
-import com.example.curator.dto.ArtworkDTO;
-import com.example.curator.dto.ExhibitionDTO;
-import com.example.curator.dto.ApiArtworkIdDTO;
-import com.example.curator.dto.ExhibitionPatchDTO;
+import com.example.curator.dto.*;
 import com.example.curator.model.ArtworkResults;
 import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +11,7 @@ public interface CuratorService {
     ArtworkResults getArtworkSearchResults(String query, Integer page);
     ArtworkDTO getRandomMetArtwork();
     ArtworkDTO getApiArtworkDetails(@Valid ApiArtworkIdDTO apiArtworkIdDTO);
-    ExhibitionDTO createExhibition(String title);
+    ExhibitionDTO createExhibition(ExhibitionCreateDTO title);
     List<ExhibitionDTO> getAllExhibitions();
     ExhibitionDTO getExhibitionDetails(Long id);
     ExhibitionDTO updateExhibitionDetails(Long id, @Validated ExhibitionPatchDTO exhibitionDTO);

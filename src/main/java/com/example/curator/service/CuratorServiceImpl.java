@@ -45,14 +45,14 @@ public class CuratorServiceImpl implements CuratorService{
     }
 
     @Override
-    public ExhibitionDTO createExhibition(String title) {
-        if(exhibitionRepository.existsByTitle(title.trim())){
-            throw new InvalidExhibitionException(String.format("An exhibition with title: \"%s\" already exists",title.trim()));
+    public ExhibitionDTO createExhibition(ExhibitionCreateDTO createDTO) {
+        if(exhibitionRepository.existsByTitle(createDTO.getTitle().trim())){
+            throw new InvalidExhibitionException(String.format("An exhibition with title: \"%s\" already exists",createDTO.getTitle().trim()));
         }
 
         Exhibition exhibition = Exhibition.builder().
-                title(title.trim())
-                .description("")
+                title(createDTO.getTitle().trim())
+                .description(createDTO.getDescription() != null ? createDTO.getDescription() : "")
                 .artworks(new ArrayList<>())
                 .build();
 
