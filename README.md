@@ -251,7 +251,7 @@ Removes an artwork from the specified exhibition.
 ```
 <p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
 
-## Object Summary
+# Object Summary
 ### `ArtworkDTO`
 Represents an artwork.
 
@@ -276,7 +276,7 @@ Represents an exhibition with its associated artworks.
 | artworks    | List (ArtworkDTO) | List of artwork objects          |
 
 
-## Validation Rules
+# Validation Rules
 
 - **ApiArtworkIdDTO**
     - `artId`: Must not be null and must be greater than or equal to 0.
@@ -296,7 +296,7 @@ Represents an exhibition with its associated artworks.
 
 
 <!-- GETTING STARTED -->
-## Getting Started
+# Getting Started
 
 This is an example of how you may set up the project locally.
 To get a local copy up and running follow these simple steps.
