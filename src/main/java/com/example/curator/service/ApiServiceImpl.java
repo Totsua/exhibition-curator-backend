@@ -46,6 +46,8 @@ public class ApiServiceImpl implements ApiService{
 
         }catch (APIPageOutOfBoundsException e){
             log.warn("Chicago API page out of bounds for query '{}' page {}: {}", query, page, e.getMessage());
+            // We mainly work on the Chicago api because met is inconsistent
+            // therefore if chicago runs out the error is thrown
             throw e;
         }
 
@@ -53,6 +55,7 @@ public class ApiServiceImpl implements ApiService{
             ArrayList<ArtworkDTO> metArtworksResults = getMetSearchResults(query, page);
             allArtworkResults.addAll(metArtworksResults);
         }catch (APIPageOutOfBoundsException e){
+            // We log if the met throws an exception
             log.info("Met API page out of bounds for query '{}' page {}: {}", query, page, e.getMessage());
         }
 
@@ -145,6 +148,26 @@ public class ApiServiceImpl implements ApiService{
         return artwork;
     }
 
+    private JsonNode sendGetRequest(String url){
+        HttpRequest chiSearchRequest = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+//               todo for new user: add your email to the header
+//               .header("AIC-User-Agent","exhibition-curator (*Insert Email*)")
+                .GET()
+                .build();
+
+        try{
+            HttpResponse<String> response = client.send(chiSearchRequest,HttpResponse.BodyHandlers.ofString());
+            return mapper.readTree(response.body());
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            throw new ErrorSendingGETRequestException("Server Error: Unable To Read External GET Response");
+        }
+
+    }
+
+
+
     private ChicagoSearchResults getChiAPISearchResults(String query, Integer page){
         ArrayList<ArtworkDTO> artworkResults = new ArrayList<>();
         ChicagoSearchResults chicagoSearchResults = new ChicagoSearchResults(artworkResults,0);
@@ -189,24 +212,7 @@ public class ApiServiceImpl implements ApiService{
     }
 
 
-    private JsonNode sendGetRequest(String url){
-        HttpRequest chiSearchRequest = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-//               todo for new user: add your email to the header
-//               .header("AIC-User-Agent","exhibition-curator (*Insert Email*)")
-                .GET()
-                .build();
 
-        try{
-            HttpResponse<String> response = client.send(chiSearchRequest,HttpResponse.BodyHandlers.ofString());
-            return mapper.readTree(response.body());
-        } catch (IOException | InterruptedException e) {
-            // Todo 28/05/25: Make new exception that is thrown to show trouble getting api data
-            e.printStackTrace();
-            throw new ErrorSendingGETRequestException("Server Error: Unable To Read External GET Response");
-        }
-
-    }
 
     private ArrayList<ArtworkDTO> getMetSearchResults(String query, Integer page){
         ArrayList<ArtworkDTO> artworks = new ArrayList<>();
