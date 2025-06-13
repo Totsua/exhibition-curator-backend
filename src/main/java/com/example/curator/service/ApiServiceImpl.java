@@ -25,14 +25,30 @@ import java.util.Random;
 @Slf4j
 @Service
 public class ApiServiceImpl implements ApiService{
+    // Global ObjectMapper and HttpClient
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final HttpClient client  = HttpClient.newBuilder().build();
+    // BASE URL For Art Institute Of Chicago API
     private static final String CHICAGO_ARTWORK_SEARCH_URL = "https://api.artic.edu/api/v1/artworks/";
+    // BASE URL For The Metropolitan Museum of Art Collection API
+    private static final String MET_ARTWORK_BASE_URL = "https://collectionapi.metmuseum.org/public/collection/v1/";
+
     private static final int PAGE_SIZE = 5;
     private static final int MAX_RANDOM_ATTEMPTS = 50;
+
+    // Total objects in the Met database
     private static final int TOTAL_MET_OBJECTS = 922041;
 
-
+    /**
+     * Search all apis for artworks based on a query
+     * If the chicago api doesn't have any results then no results will be returned.
+     * This is due to the Met api not having a filter for "hasImages" on their search.
+     * Artworks with images are the only ones wanted, therefore the arraylist from the Met is inconsistent
+     *
+     * @param query the search query
+     * @param page the requested api page
+     * @return ArtworkResults
+     */
     @Override
     public ArtworkResults getArtworkSearchResults(String query, Integer page) {
 
@@ -63,6 +79,15 @@ public class ApiServiceImpl implements ApiService{
         return new ArtworkResults(query,page,allArtworkResults,total_pages);
     }
 
+    /**
+     * This gets a random artwork from the Met API,
+     * A random objectID is searched, if it meets the conditions it's returned,
+     * else, it tries again.
+     * It will only try 50 times MAX.
+     * @return ArtworkDTO
+     */
+
+
     @Override
     public ArtworkDTO getRandomMetArtwork() {
         ArtworkDTO artwork = null;
@@ -74,12 +99,14 @@ public class ApiServiceImpl implements ApiService{
         while (attempts < MAX_RANDOM_ATTEMPTS) {
             attempts++;
             int randomObjectId = random.nextInt(TOTAL_MET_OBJECTS) + 1;
-            String url = "https://collectionapi.metmuseum.org/public/collection/v1/objects/" + randomObjectId;
+            String url =  MET_ARTWORK_BASE_URL + "objects/" + randomObjectId;
 
             JsonNode result = sendGetRequest(url);
 
             boolean hasMessage = result.has("message");
 
+            // "constituents" contains artist and their ids,
+            // we only want artworks with this field
 
             boolean hasValidConstituents = result.has("constituents") &&
                     !result.get("constituents").isNull() &&
@@ -127,6 +154,12 @@ public class ApiServiceImpl implements ApiService{
     }
 
 
+    /**
+     * Gets artwork from an API based on the artwork and api origin given.
+     * @param id of artwork
+     * @param apiOrigin of the artwork
+     * @return ArtworkDTO
+     */
 
     @Override
     public ArtworkDTO getApiArtworkDetails(Long id, String apiOrigin){
@@ -148,6 +181,12 @@ public class ApiServiceImpl implements ApiService{
         return artwork;
     }
 
+    /**
+     * Method to send a GET request to a given URL
+     *
+     * @param url to send request to.
+     * @return JsonNode of the response
+     */
     private JsonNode sendGetRequest(String url){
         HttpRequest chiSearchRequest = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -218,7 +257,7 @@ public class ApiServiceImpl implements ApiService{
         ArrayList<ArtworkDTO> artworks = new ArrayList<>();
         query = query.replace(" ", "%20");
 
-        String searchUrl = "https://collectionapi.metmuseum.org/public/collection/v1/search?q="+query+"&hasImages=true";
+        String searchUrl = MET_ARTWORK_BASE_URL + "search?q="+query+"&hasImages=true";
 
         JsonNode results = sendGetRequest(searchUrl);
 
@@ -227,9 +266,9 @@ public class ApiServiceImpl implements ApiService{
         }
 
 
-        // we only want 10 results
+        // we only want 5 results
         int start = (page - 1) * PAGE_SIZE;
-        int end = start + 9;
+        int end = start + 4;
 
         JsonNode dataIdList = results.get("objectIDs");
 
@@ -241,11 +280,12 @@ public class ApiServiceImpl implements ApiService{
             throw new APIPageOutOfBoundsException("Out of bounds");
         }
 
+        // For loop through the object Ids to see if there is a valid artwork that meets the conditions
 
         for(int i = start; i <= end && i < dataIdList.size(); i++){
             int id  = dataIdList.get(i).asInt();
 
-            String objectUrl = "https://collectionapi.metmuseum.org/public/collection/v1/objects/" + id;
+            String objectUrl = MET_ARTWORK_BASE_URL + "objects/" + id;
             JsonNode result = sendGetRequest(objectUrl);
 
             ArtistDTO artist;
@@ -334,7 +374,7 @@ public class ApiServiceImpl implements ApiService{
     }
 
     private ArtworkDTO getMetArtById(String id){
-        String url = "https://collectionapi.metmuseum.org/public/collection/v1/objects/" + id;
+        String url = MET_ARTWORK_BASE_URL + "objects/" + id;
         JsonNode result = sendGetRequest(url);
         ArtworkDTO artwork;
         ArtistDTO artist;

@@ -113,10 +113,12 @@ public class CuratorServiceImpl implements CuratorService{
         Exhibition exhibitionInDB = exhibitionRepository.findById(id)
                 .orElseThrow(() -> new InvalidExhibitionException("There are no Exhibitions with id: " + id));
 
+        // We want the artwork details from the source, not the user
         ArtworkDTO artworkApi = apiService.getApiArtworkDetails(artworkDTO.getArtId(), artworkDTO.getApiOrigin());
         Artwork artwork = new Artwork();
         Artist artist = new Artist();
 
+        // check to see if the artist is already in the db, if not, make one
         if(artistRepository.existsByApiIdAndApiOrigin(artworkApi.getArtist().getApiID(),artworkApi.getApiOrigin())){
             artist = artistRepository.findByApiIdAndApiOrigin(artworkApi.getArtist().getApiID(),artworkApi.getApiOrigin()).get();
         }
@@ -129,7 +131,7 @@ public class CuratorServiceImpl implements CuratorService{
              artist = artistRepository.save(artist);
         }
 
-
+        // check to see if the artwork is already in the db, if not, make one
         if(artworkRepository.existsByApiIdAndApiOrigin(artworkApi.getId(), artworkApi.getApiOrigin())){
             artwork = artworkRepository.findByApiIdAndApiOrigin(artworkApi.getId(),artworkApi.getApiOrigin()).get();
         }else{
@@ -159,6 +161,7 @@ public class CuratorServiceImpl implements CuratorService{
         Exhibition exhibitionInDB = exhibitionRepository.findById(exhibitionId).orElseThrow(() ->
                 new InvalidExhibitionException("There are no Exhibitions with id: " + exhibitionId));
 
+        // If the artwork is not in the repository it won't be in the exhibition
         Artwork artwork = artworkRepository.findByApiIdAndApiOrigin(artworkDTO.getArtId(), artworkDTO.getApiOrigin())
                 .orElseThrow(() -> new InvalidArtworkException(
                         String.format("Artwork with id: %s and apiOrigin: \"%s\" does not exist in the database",
@@ -179,6 +182,9 @@ public class CuratorServiceImpl implements CuratorService{
         return exhibitionToDTOMapper(exhibitionRepository.save(exhibitionInDB));
 
     }
+
+
+    // Mappers
 
     private ExhibitionDTO exhibitionToDTOMapper(Exhibition exhibition) {
         ArrayList<ArtworkDTO> artworks = new ArrayList<>();
