@@ -8,8 +8,10 @@ import com.example.curator.exception.ErrorSendingGETRequestException;
 import com.example.curator.exception.InvalidArtworkException;
 import com.example.curator.exception.UnknownAPIOriginException;
 import com.example.curator.model.ArtworkResults;
+import com.example.curator.model.ChicagoSearchResults;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,42 +22,42 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Random;
 
+@Slf4j
 @Service
 public class ApiServiceImpl implements ApiService{
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final HttpClient client  = HttpClient.newBuilder().build();
     private static final String CHICAGO_ARTWORK_SEARCH_URL = "https://api.artic.edu/api/v1/artworks/";
-
+    private static final int PAGE_SIZE = 5;
+    private static final int MAX_RANDOM_ATTEMPTS = 20;
+    private static final int TOTAL_MET_OBJECTS = 922041;
 
 
     @Override
     public ArtworkResults getArtworkSearchResults(String query, Integer page) {
 
-        ArrayList<ArtworkDTO> allArtworkResults = new ArrayList<>();
-        int total_pages = 1;
-        int errorCount = 0;
+        ArrayList<ArtworkDTO> allArtworkResults;
+        int total_pages;
 
         try{
-            ArrayList<ArtworkDTO> chiArtworkResults = getChiAPISearchResults(query, page);
-            if(!chiArtworkResults.isEmpty()){
-                total_pages = chiArtworkResults.getLast().getId().intValue();
-                chiArtworkResults.removeLast();
-            }
+            ChicagoSearchResults chicagoSearchResults = getChiAPISearchResults(query, page);
+            total_pages = chicagoSearchResults.getTotal_pages();
+            allArtworkResults = new ArrayList<>(chicagoSearchResults.getArtworks());
 
-            allArtworkResults.addAll(chiArtworkResults);
         }catch (APIPageOutOfBoundsException e){
-            errorCount ++;
+            log.warn("Chicago API page out of bounds for query '{}' page {}: {}", query, page, e.getMessage());
+            throw e;
         }
 
-        // error count should be equal to the number of apis
-        if(errorCount == 1){
-            throw new APIPageOutOfBoundsException(
-                    String.format("Page number: %s is out of bounds for query: \"%s\"",page,query));
+        try{
+            ArrayList<ArtworkDTO> metArtworksResults = getMetSearchResults(query, page);
+            allArtworkResults.addAll(metArtworksResults);
+        }catch (APIPageOutOfBoundsException e){
+            log.info("Met API page out of bounds for query '{}' page {}: {}", query, page, e.getMessage());
         }
 
-        // todo: Add the Fitzwilliam API methods and place all into allArtworkResults
 
-        return new ArtworkResults(query,page,allArtworkResults,total_pages); // add total_pages
+        return new ArtworkResults(query,page,allArtworkResults,total_pages);
     }
 
     @Override
@@ -64,14 +66,11 @@ public class ApiServiceImpl implements ApiService{
 
         Random random = new Random();
 
-        int TOTAL_OBJECTS = 922041;
-
-        int maxAttempts = 20;
         int attempts = 0;
 
-        while (attempts < maxAttempts) {
+        while (attempts < MAX_RANDOM_ATTEMPTS) {
             attempts++;
-            int randomObjectId = random.nextInt(TOTAL_OBJECTS) + 1;
+            int randomObjectId = random.nextInt(TOTAL_MET_OBJECTS) + 1;
             String url = "https://collectionapi.metmuseum.org/public/collection/v1/objects/" + randomObjectId;
 
             JsonNode result = sendGetRequest(url);
@@ -117,7 +116,7 @@ public class ApiServiceImpl implements ApiService{
             }
         }
 
-        if(attempts == maxAttempts){
+        if(attempts == MAX_RANDOM_ATTEMPTS){
             throw new APIPageOutOfBoundsException("Max Attempts Tried");
         }
 
@@ -129,29 +128,26 @@ public class ApiServiceImpl implements ApiService{
     @Override
     public ArtworkDTO getApiArtworkDetails(Long id, String apiOrigin){
         ArtworkDTO artwork = new ArtworkDTO();
-        try {
-            switch (apiOrigin) {
-                case "Chicago Institute":
-                    artwork = getChiArtById(id.toString());
-                    break;
-                /*case "Fitzwilliam":
+        switch (apiOrigin) {
+            case "Chicago Institute":
+                artwork = getChiArtById(id.toString());
+                break;
+            /*case "Fitzwilliam":
 
-                    break;*/
-                 case "The MET":
-                     artwork = getMetArtById(id.toString());
-                     break;
-                default:
-                    throw new UnknownAPIOriginException("Error: API Origin \"" + apiOrigin + "\" is unknown.");
-            }
-        }catch (InvalidArtworkException e){
-            throw e;
+                break;*/
+             case "The MET":
+                 artwork = getMetArtById(id.toString());
+                 break;
+            default:
+                throw new UnknownAPIOriginException("Error: API Origin \"" + apiOrigin + "\" is unknown.");
         }
 
         return artwork;
     }
 
-    private ArrayList<ArtworkDTO> getChiAPISearchResults(String query, Integer page){
+    private ChicagoSearchResults getChiAPISearchResults(String query, Integer page){
         ArrayList<ArtworkDTO> artworkResults = new ArrayList<>();
+        ChicagoSearchResults chicagoSearchResults = new ChicagoSearchResults(artworkResults,0);
         query = query.replace(" ","%20");
         String searchUrl = CHICAGO_ARTWORK_SEARCH_URL + "search?q=" + query.trim() +"&page=" + page +"&limit=10";
 
@@ -167,7 +163,7 @@ public class ApiServiceImpl implements ApiService{
         int total = chiSearchRoot.path("pagination").path("total").asInt();
 
         if(total <= 0) {
-            return artworkResults;
+            return chicagoSearchResults;
         }
             JsonNode chiArtResults = chiSearchRoot.findPath("data");
             for(JsonNode node : chiArtResults){
@@ -183,14 +179,13 @@ public class ApiServiceImpl implements ApiService{
                     if(art.getId() != 0 && art.getArtist().getApiID() != 0){
                         artworkResults.add(art);
                     }
-                }catch (InvalidArtworkException ignored){}
+                }catch (InvalidArtworkException e){log.debug("Invalid artwork skipped: {}", e.getMessage());}
 
             }
 
-            ArtworkDTO artworkDTO = ArtworkDTO.builder().id((long) total_pages ).build();
-            artworkResults.add(artworkDTO);
+            chicagoSearchResults.setTotal_pages(total_pages);
 
-        return artworkResults;
+        return chicagoSearchResults;
     }
 
 
@@ -213,7 +208,91 @@ public class ApiServiceImpl implements ApiService{
 
     }
 
+    private ArrayList<ArtworkDTO> getMetSearchResults(String query, Integer page){
+        ArrayList<ArtworkDTO> artworks = new ArrayList<>();
+        query = query.replace(" ", "%20");
 
+        String searchUrl = "https://collectionapi.metmuseum.org/public/collection/v1/search?q="+query+"&hasImages=true";
+
+        JsonNode results = sendGetRequest(searchUrl);
+
+        if(results.path("total").asInt() <= 0){
+            return artworks;
+        }
+
+
+        // we only want 10 results
+        int start = (page - 1) * PAGE_SIZE;
+        int end = start + 9;
+
+        JsonNode dataIdList = results.get("objectIDs");
+
+        if(dataIdList == null){
+            return artworks;
+        }
+
+        if(start >= dataIdList.size()){
+            throw new APIPageOutOfBoundsException("Out of bounds");
+        }
+
+
+        for(int i = start; i <= end && i < dataIdList.size(); i++){
+            int id  = dataIdList.get(i).asInt();
+
+            String objectUrl = "https://collectionapi.metmuseum.org/public/collection/v1/objects/" + id;
+            JsonNode result = sendGetRequest(objectUrl);
+
+            ArtistDTO artist;
+            ArtworkDTO artwork;
+
+
+            if(result.has("message")){
+                continue;
+            }
+
+            boolean hasValidConstituents = result.has("constituents") &&
+                    !result.get("constituents").isNull() &&
+                    result.get("constituents").isArray() &&
+                    !result.get("constituents").isEmpty();
+
+            if (hasValidConstituents) {
+                JsonNode constituent = result.get("constituents").get(0);
+                long artistApiID = constituent.path("constituentID").asLong(1L);
+
+                    artist = ArtistDTO.builder()
+                            .name(constituent.path("name").asText("Unknown Artist"))
+                            .apiID(artistApiID)
+                            .build();
+                }else {
+                    artist = ArtistDTO.builder()
+                            .name("Unknown Artist")
+                            .apiID(1L)
+                            .build();
+            }
+
+                String imageUrl = result.path("primaryImage").asText("");
+                if (imageUrl.isEmpty()) {
+                    continue;
+                }
+
+
+                 artwork = ArtworkDTO.builder()
+                        .id(result.path("objectID").asLong())
+                        .title(result.path("title").asText("Untitled Art"))
+                        .description("No Description Provided From \"The Metropolitan Museum\"")
+                        .imageUrl(imageUrl)
+                        .apiOrigin("The MET")
+                        .altText("Artwork from the MET: " + result.path("title").asText("Untitled Art"))
+                        .artist(artist)
+                        .build();
+
+                artworks.add(artwork);
+
+            }
+
+
+        return artworks;
+    }
 
     private ArtworkDTO getChiArtById(String id){
         String url = CHICAGO_ARTWORK_SEARCH_URL + id;
@@ -252,18 +331,30 @@ public class ApiServiceImpl implements ApiService{
         String url = "https://collectionapi.metmuseum.org/public/collection/v1/objects/" + id;
         JsonNode result = sendGetRequest(url);
         ArtworkDTO artwork;
-        JsonNode constituent = result.get("constituents").get(0);
-        long artistApiID = constituent.path("constituentID").asLong(0L);
+        ArtistDTO artist;
+
+        if(result.has("message")){
+            throw new InvalidArtworkException("Invalid id: " + id + " for Met Museum API");
+        }
+
+
+        if (result.has("constituents") && result.get("constituents").isArray() && !result.get("constituents").isEmpty()) {
+            JsonNode constituent = result.get("constituents").get(0);
+            artist = ArtistDTO.builder()
+                    .name(constituent.path("name").asText("Unknown Artist"))
+                    .apiID(constituent.path("constituentID").asLong(1L))
+                    .build();
+        } else {
+            artist = ArtistDTO.builder()
+                    .name("Unknown Artist")
+                    .apiID(1L)
+                    .build();
+        }
 
         String imageUrl = result.path("primaryImage").asText("");
 
-        ArtistDTO artist = ArtistDTO.builder()
-                .name(constituent.path("name").asText("Unknown Artist"))
-                .apiID(artistApiID)
-                .build();
-
         artwork = ArtworkDTO.builder()
-                .id(result.path("objectID").asLong())
+                .id(result.path("objectID").asLong(0L))
                 .title(result.path("title").asText("Untitled Art"))
                 .description("No Description Provided From The Metropolitan Museum")
                 .imageUrl(imageUrl)
