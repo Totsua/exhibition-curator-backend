@@ -325,6 +325,12 @@ To get a local copy up and running follow these simple steps.
     spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
     spring.jpa.hibernate.ddl-auto=update
    ```
+   
+4. Enter your email in `ApiServiceImpl - sendGetRequest method`
+   ```js
+   uncomment and add your email
+   // .header("AIC-User-Agent","exhibition-curator (*Insert Email*)")
+   ```
 5. Change git remote url to avoid accidental pushes to base project
    ```sh
    git remote set-url origin github_username/repo_name
