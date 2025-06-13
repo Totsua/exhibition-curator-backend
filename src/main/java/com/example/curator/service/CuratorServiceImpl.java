@@ -28,13 +28,10 @@ public class CuratorServiceImpl implements CuratorService{
 
     @Override
     public ArtworkResults getArtworkSearchResults(String query, Integer page) {
-        // todo: check page is equal to or lower than it can be on API pagination
         if(page == null || page < 1){
             throw new InvalidRequestException("page must be greater or equal to 1.");
         }
-
-        ArtworkResults artworkSearchResults = apiService.getArtworkSearchResults(query,page);
-        return artworkSearchResults;
+        return apiService.getArtworkSearchResults(query,page);
     }
 
     @Override
@@ -110,11 +107,6 @@ public class CuratorServiceImpl implements CuratorService{
 
     }
 
-
-
-    // todo: optimise repository calls ( do the find as an optional object then do .isPresent() as the if check)
-    //  don't save artwork first, do artist checks first
-    //  check if the artwork is already in the exhibition, if so throw an exception
     @Override
     public ExhibitionDTO saveExhibitionArt(Long id, ApiArtworkIdDTO artworkDTO) {
 
