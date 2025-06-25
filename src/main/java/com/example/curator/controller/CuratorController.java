@@ -41,27 +41,27 @@ public class CuratorController {
     public ResponseEntity<List<ExhibitionDTO>> getAllExhibitions(){
         return new ResponseEntity<>(service.getAllExhibitions(),HttpStatus.OK);
     }
-    @GetMapping("/exhibitions/{id}")
-    public ResponseEntity<ExhibitionDTO> getExhibitionDetails(@PathVariable Long id){
-        return new ResponseEntity<>(service.getExhibitionDetails(id),HttpStatus.OK);
+    @GetMapping("/exhibitions/{exhibitionId}")
+    public ResponseEntity<ExhibitionDTO> getExhibitionDetails(@PathVariable Long exhibitionId){
+        return new ResponseEntity<>(service.getExhibitionDetails(exhibitionId),HttpStatus.OK);
     }
 
     // Update an exhibition
-    @PatchMapping("/exhibitions/{id}")
-    public ResponseEntity<ExhibitionDTO> updateExhibitionDetails(@PathVariable Long id, @RequestBody @Validated ExhibitionPatchDTO exhibition){
-        return new ResponseEntity<>(service.updateExhibitionDetails(id,exhibition), HttpStatus.OK);
+    @PatchMapping("/exhibitions/{exhibitionId}")
+    public ResponseEntity<ExhibitionDTO> updateExhibitionDetails(@PathVariable Long exhibitionId, @RequestBody @Validated ExhibitionPatchDTO exhibition){
+        return new ResponseEntity<>(service.updateExhibitionDetails(exhibitionId,exhibition), HttpStatus.OK);
     }
     // Delete an exhibition
-    @DeleteMapping("/exhibitions/{id}")
-    public ResponseEntity<ExhibitionDTO> deleteExhibition(@PathVariable Long id){
-        service.deleteExhibition(id);
+    @DeleteMapping("/exhibitions/{exhibitionId}")
+    public ResponseEntity<ExhibitionDTO> deleteExhibition(@PathVariable Long exhibitionId){
+        service.deleteExhibition(exhibitionId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Save artwork to exhibition
-    @PostMapping("/exhibitions/{id}/artworks")
-    public ResponseEntity<ExhibitionDTO> saveExhibitionArt(@PathVariable Long id, @RequestBody @Valid ApiArtworkIdDTO artworkDTO){
-        return new ResponseEntity<>(service.saveExhibitionArt(id, artworkDTO),HttpStatus.CREATED);
+    @PostMapping("/exhibitions/{exhibitionId}/artworks")
+    public ResponseEntity<ExhibitionDTO> saveExhibitionArt(@PathVariable Long exhibitionId, @RequestBody @Valid ApiArtworkIdDTO artworkDTO){
+        return new ResponseEntity<>(service.saveExhibitionArt(exhibitionId, artworkDTO),HttpStatus.CREATED);
     }
     // Delete artwork from exhibition
     @DeleteMapping("/exhibitions/{exhibitionId}/artworks")
