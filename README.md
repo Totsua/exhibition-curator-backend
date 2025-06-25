@@ -37,7 +37,7 @@ For the Android frontend, please see: [repo](https://github.com/Totsua/exhibitio
 Returns a random artwork from the Metropolitan Museum of Art Collection API.
 
 **Response Example**
-```json
+```jsonc
 {
   "id": 362330,
   "title": "The Terra-Cotta Guide to Chicago",
@@ -55,7 +55,7 @@ Returns a random artwork from the Metropolitan Museum of Art Collection API.
 Searches for artworks with query and paginated page number.
 
 
-Searches the 'Chicago Institute Of Art' API.
+Searches the 'Chicago Institute Of Art' and 'Metropolitan Museum of Art Collection' APIs.
 
 - Parameters required:
     - `query`: Search term (eg: "Monet")
@@ -88,7 +88,7 @@ Searches the 'Chicago Institute Of Art' API.
 
 ### `POST /search`
 Returns a detailed artwork.
-- Requested Body:
+- **Request Body** (ApiArtworkId):
 ```jsonc
 {
    "artId": 129884,
@@ -117,12 +117,14 @@ Returns a detailed artwork.
 ### `POST /exhibitions/create`
 Creates a new exhibition and returns it.
 
-**Request Body**
+**Request Body** (Exhibition-Create):
 ```jsonc
 {
    "title": "Example 30"
 }
 ```
+("description" is optional)
+
 **Response Example**
 ```jsonc
 {
@@ -150,7 +152,7 @@ Returns a list of all saved exhibitions
    // ... rest of the exhibitions
 ]
 ```
-### `GET /exhibitions/{id}`
+### `GET /exhibitions/{exhibitionId}`
 Returns a specified exhibition
 
 **Response Example**
@@ -168,14 +170,14 @@ Returns a specified exhibition
 ]
 ```
 
-### `PATCH /exhibitions/{id}`
+### `PATCH /exhibitions/{exhibitionId}`
 Updates exhibition metadata
 
-**Request Body**
+**Request Body** (Exhibition-Patch):
 
 ```jsonc
 {
-   "title": "Updated Title",
+   "title": "Updated Title (optional)",
    "description": "Updated Description (optional)"
 }
 ```
@@ -194,16 +196,16 @@ Updates exhibition metadata
     }
 ]
 ```
-### `Delete /exhibitions/{id}`
+### `Delete /exhibitions/{exhibitionId}`
 Deletes an exhibition.
 
 <p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
 
 ## Exhibition-Artwork Endpoints
-### `POST /exhibitions/{id}/artworks`
+### `POST /exhibitions/{exhibitionId}/artworks`
 Adds an artwork to the specified exhibition.
 
-**Request Body**
+**Request Body** (ApiArtworkId)
 ```jsonc
 {
    "artId": 12345,
@@ -225,10 +227,10 @@ Adds an artwork to the specified exhibition.
 ]
 ```
 
-### `DELETE /exhibitions/{id}/artworks`
+### `DELETE /exhibitions/{exhibitionId}/artworks`
 Removes an artwork from the specified exhibition.
 
-**Request Body**
+**Request Body** (ApiArtworkId)
 ```jsonc
 {
    "artId": 12345,
@@ -252,18 +254,26 @@ Removes an artwork from the specified exhibition.
 <p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
 
 # Object Summary
-### `ArtworkDTO`
+### `Artwork`
 Represents an artwork.
 
-| Field       | Type        | Description                    |
-|-------------|-------------|--------------------------------|
-| id          | Long        | Artwork ID                     |
-| title       | String      | Title of the artwork           |
-| description | String      | Artwork description            |
-| altText     | String      | Alt text for accessibility     |
-| apiOrigin   | String      | Originating API (e.g: THE MET) |
-| imageUrl    | String      | Link to artwork image          |
-| artist      | ArtistDTO   | Artist information             |
+| Field       | Type        | Description                            |
+|-------------|-------------|----------------------------------------|
+| id          | Long        | Artwork ID                             |
+| title       | String      | Title of the artwork                   |
+| description | String      | Artwork description                    |
+| altText     | String      | Alt text for accessibility             |
+| apiOrigin   | String      | Originating API (e.g: THE MET)         |
+| imageUrl    | String      | Link to artwork image                  |
+| artist      | Artist      | Artist information ("apiID" and "name" |
+
+### `ApiArtworkId`
+Represents the full id of an artwork
+
+| Field     | Type        | Description                    |
+|-----------|-------------|--------------------------------|
+| id        | Long        | Artwork ID                     |
+| apiOrigin | String      | Originating API (e.g: THE MET) |
 
 ### `Exhibition`
 Represents an exhibition with its associated artworks.
@@ -273,21 +283,22 @@ Represents an exhibition with its associated artworks.
 | id          | Long              | Exhibition ID                    |
 | title       | String            | Exhibition title                 |
 | description | String (optional) | Description of the exhibition    |
-| artworks    | List (ArtworkDTO) | List of artwork objects          |
+| artworks    | List (Artwork)    | List of artwork objects          |
 
 
 # Validation Rules
 
-- **ApiArtworkIdDTO**
+- **ApiArtworkId**
     - `artId`: Must not be null and must be greater than or equal to 0.
     - `apiOrigin`: Required and must not be blank.
 
 
-- **ExhibitionCreateDTO**
+- **Exhibition-Create**
     - `title`: Must be between 1 and 80 characters.
+    - `description`: Optional, max 500 characters.
 
 
-- **ExhibitionPatchDTO**
+- **Exhibition-Patch**
     - `title`: Optional, if provided must be 1–80 characters.
     - `description`: Optional, max 500 characters.
 
