@@ -1,6 +1,6 @@
 # Exhibition Curator Backend API
 # About the project
-This  API allows users to explore artworks from public museum APIs and curate their own virtual exhibitions. Users can search for artworks, retrieve artwork details, and create, update, and manage exhibitions containing selected pieces.
+This API allows users to explore artworks from public museum APIs and curate their own virtual exhibitions. Users can search for artworks, retrieve artwork details and add an artwork to the user's exhibition. The user's exhibitions can be created, retrieved, updated, and deleted.
 # Dependencies
 - Java - JDK 21
 
@@ -8,17 +8,13 @@ This  API allows users to explore artworks from public museum APIs and curate th
 
 - Spring Boot Web
 
-- Spring Test
+- Spring Boot JPA
 
-- Spring Validation
-
-- Spring Security
-
-- Spring JPA
-
-- MySQL Driver
+- MySQL Connector
 
 - Lombok
+
+- Hibernate Validator
 
 - H2 Database
 
@@ -257,15 +253,15 @@ Removes an artwork from the specified exhibition.
 ### `Artwork`
 Represents an artwork.
 
-| Field       | Type        | Description                            |
-|-------------|-------------|----------------------------------------|
-| id          | Long        | Artwork ID                             |
-| title       | String      | Title of the artwork                   |
-| description | String      | Artwork description                    |
-| altText     | String      | Alt text for accessibility             |
-| apiOrigin   | String      | Originating API (e.g: THE MET)         |
-| imageUrl    | String      | Link to artwork image                  |
-| artist      | Artist      | Artist information ("apiID" and "name" |
+| Field       | Type        | Description                             |
+|-------------|-------------|-----------------------------------------|
+| id          | Long        | Artwork ID                              |
+| title       | String      | Title of the artwork                    |
+| description | String      | Artwork description                     |
+| altText     | String      | Alt text for accessibility              |
+| apiOrigin   | String      | Originating API (e.g: THE MET)          |
+| imageUrl    | String      | Link to artwork image                   |
+| artist      | Artist      | Artist information ("apiID" and "name") |
 
 ### `ApiArtworkId`
 Represents the full id of an artwork
@@ -315,8 +311,7 @@ To get a local copy up and running follow these simple steps.
 ### Prerequisites
 
 * Install [MySQL](https://dev.mysql.com/downloads/installer/)
-* Create a server on MySQL with a named database
-
+* Create a server on MySQL with a named database and run the server
 
 ### Installation
 
@@ -347,5 +342,5 @@ To get a local copy up and running follow these simple steps.
    git remote set-url origin github_username/repo_name
    git remote -v # confirm the changes
    ```
-
+### *You are all set!*
 <p align="right">(<a href="#exhibition-curator-backend-api">back to top</a>)</p>
